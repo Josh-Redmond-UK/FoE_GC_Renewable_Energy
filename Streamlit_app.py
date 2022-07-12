@@ -4,7 +4,7 @@ from streamlit_folium import folium_static
 import ee
 import geemap.eefolium as geemap
 from utils import *
-ee.Initialize()
+ee.Initialize(st.secrets['EARTHENGINE_TOKEN'])
 
 
 wind_exclusions = ["Wind Speed",
