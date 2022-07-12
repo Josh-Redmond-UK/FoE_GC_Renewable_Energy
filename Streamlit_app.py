@@ -4,6 +4,7 @@ from streamlit_folium import folium_static
 import ee
 import geemap.eefolium as geemap
 from utils import *
+ee.Initialize()
 
 
 wind_exclusions = ["Wind Speed",
