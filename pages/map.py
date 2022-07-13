@@ -1,20 +1,25 @@
-from turtle import onclick
+# Dependencies
 import streamlit as st
+
+# Set page config
+#st.set_page_config(page_title = "Map output")
+
 from streamlit_folium import folium_static
 import ee
 
-
-
 import geemap.eefolium as geemap
+
+
 from utils import *
 
+
+# Load in datasets (that aren't in GEE)
 polys_list = load_csv_list("adm2_names.csv")[1:]
 
-
+# Intialize earth engine
 ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
 
-
-
+# Exclusion zones
 exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
 "Slope": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
 "Transmission Lines":ee.FeatureCollection('projects/data-sunlight-311713/assets/transmission').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
@@ -46,9 +51,9 @@ solar_exclusions = ["Solar Insolation",
 "Aspect",
 "Slope > 10"]
 
-
-st.title("UK Renewable Energy Potential Map", anchor=None)
-
+# Streamlit formatting
+st.sidebar.markdown("Map output")
+st.markdown("Map output")
 
 with st.form("Parameters"):
     with st.container():
@@ -60,30 +65,31 @@ with st.form("Parameters"):
             go_button = st.form_submit_button("Draw Map")
 
 
-    with st.sidebar:
-        with st.container():
-            st.header("Toggle Exclusion Criteria")
-            radio_button = st.radio("Scenarios", ["Maximum Exclusions", "Allow on Peatland", "Custom"])
-            if radio_button == "Custom":
-                with st.expander("Options"):
-                    exclusion_buttons = {}
-                    if mode == "Wind":
-                        exclusion_options = test_exclusions
-                    else:
-                        exclusion_options = test_exclusions#common_exclusions+solar_exclusions
 
-                    for ex in exclusion_options:
-                        st.write(ex)
-                        x = st.checkbox(ex)
-                        exclusion_buttons[ex] = x
-            if radio_button == "Maximum Exclusions":
-                exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True, "Roads":True}
-            if radio_button == "Allow on Peatland":
-                exclusion_buttons = {"Wind Speed":True, "Slope": True}
+    # with st.sidebar:
+    #     with st.container():
+    #         st.header("Toggle Exclusion Criteria")
+    #         radio_button = st.radio("Scenarios", ["Maximum Exclusions", "Allow on Peatland", "Custom"])
+    #         if radio_button == "Custom":
+    #             with st.expander("Options"):
+    #                 exclusion_buttons = {}
+    #                 if mode == "Wind":
+    #                     exclusion_options = test_exclusions
+    #                 else:
+    #                     exclusion_options = test_exclusions#common_exclusions+solar_exclusions
+
+    #                 for ex in exclusion_options:
+    #                     st.write(ex)
+    #                     x = st.checkbox(ex)
+    #                     exclusion_buttons[ex] = x
+    #         if radio_button == "Maximum Exclusions":
+    #             exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True, "Roads":True}
+    #         if radio_button == "Allow on Peatland":
+    #             exclusion_buttons = {"Wind Speed":True, "Slope": True}
                     
 
-            st.download_button("Download Map", "null", f"{area}-{mode}.txt")
-            #st.multiselect("Toggleable Criteria", wind_exclusions+common_exclusions)
+    #         st.download_button("Download Map", "null", f"{area}-{mode}.txt")
+    #         #st.multiselect("Toggleable Criteria", wind_exclusions+common_exclusions)
 
 
 if go_button:
