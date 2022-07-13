@@ -37,17 +37,23 @@ solar_exclusions = ["Solar Insolation",
 
 st.title("UK Renewable Energy Potential Map", anchor=None)
 
-m = geemap.Map(center=[55.3, 0], zoom=6)
-uk_adm2 = ee.FeatureCollection("FAO/GAUL/2015/level2").filter("ADM0_CODE == 256")
-m.addLayer(uk_adm2)
-folium_static(m)
 
-with st.container():
-    col1, col2 = st.columns(2)
-    with col1:
-        mode = st.radio("Power Option", ["Solar", "Wind"])
-    with col2:
-        area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
+with st.form("Parameters"):
+    with st.container():
+        col1, col2 = st.columns(2)
+        with col1:
+            mode = st.radio("Power Option", ["Solar", "Wind"])
+        with col2:
+            area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
+            go_button = st.form_submit_button("Draw Map")
+
+
+if go_button:
+    m = geemap.Map(center=[55.3, 0], zoom=4)
+    uk_adm2 = ee.FeatureCollection("FAO/GAUL/2015/level2").filter("ADM0_CODE == 256").filter(f"ADM2_NAME == '{area}'")
+    m.addLayer(uk_adm2)
+    m.centerObject(uk_adm2)
+    folium_static(m)
 
 
 #Exclusion(label="test", exclusion = ee.Terrain.slope(ee.Image("CGIAR/SRTM90_V4")).gt(15))
