@@ -1,5 +1,6 @@
 # Dependencies
 import streamlit as st
+from google.oauth2 import service_account
 
 # Set page config
 st.set_page_config(page_title = "Map output", layout="wide")
