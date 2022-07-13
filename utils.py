@@ -18,7 +18,7 @@ def area_change_callback(name, features, map):
     
 
 def load_csv_list(path):
-    return  list(pd.read_csv(path)['ADM2_NAME'])
+    return  list(pd.read_csv(path)['pcon19nm'])
 
 
 
