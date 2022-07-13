@@ -2,9 +2,16 @@ from turtle import onclick
 import streamlit as st
 from streamlit_folium import folium_static
 import ee
+
+
+
 import geemap.eefolium as geemap
 from utils import *
-ee.Initialize(st.secrets['EARTHENGINE_TOKEN'])
+
+polys_list = load_csv_list("adm2_names.csv")[1:]
+
+
+ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
 
 
 wind_exclusions = ["Wind Speed",
@@ -40,8 +47,10 @@ with st.container():
     with col1:
         mode = st.radio("Power Option", ["Solar", "Wind"])
     with col2:
-        area = st.selectbox("Area", ["Cheshire", "Devonshire", "Cornwall"]) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
+        area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
 
+
+#Exclusion(label="test", exclusion = ee.Terrain.slope(ee.Image("CGIAR/SRTM90_V4")).gt(15))
 
 
 
