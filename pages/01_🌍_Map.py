@@ -52,8 +52,7 @@ solar_exclusions = ["Solar Insolation",
 "Slope > 10"]
 
 # Streamlit formatting
-st.sidebar.markdown("Map output")
-st.markdown("Map output")
+st.title("UK Renewables Map", anchor=None)
 
 with st.form("Parameters"):
     st.header("Map Options")
