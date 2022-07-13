@@ -16,8 +16,14 @@ from utils import *
 # Load in datasets (that aren't in GEE)
 polys_list = load_csv_list("constituencies_names.csv")[1:]
 
+
+service_account = st.secrets['username']
+credentials = ee.ServiceAccountCredentials(service_account, st.secrets['gcp_service_account'])
+ee.Initialize(credentials)
+
+
 # Intialize earth engine
-ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
+#ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
 
 # Exclusion zones
 exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
