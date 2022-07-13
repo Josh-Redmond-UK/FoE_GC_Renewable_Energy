@@ -142,6 +142,3 @@ if go_button:
 
 
 #Exclusion(label="test", exclusion = ee.Terrain.slope(ee.Image("CGIAR/SRTM90_V4")).gt(15))
-
-
-
