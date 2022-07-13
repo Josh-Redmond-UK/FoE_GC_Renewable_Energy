@@ -14,6 +14,12 @@ polys_list = load_csv_list("adm2_names.csv")[1:]
 ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
 
 
+
+exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
+"Slope": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15)}
+
+test_exclusions = list(exclusions_dict.keys())
+
 wind_exclusions = ["Wind Speed",
 "Transmission Lines",
 "Aircraft Flightpath",
@@ -48,32 +54,51 @@ with st.form("Parameters"):
             go_button = st.form_submit_button("Draw Map")
 
 
+    with st.sidebar:
+        with st.container():
+            st.header("Toggle Exclusion Criteria")
+            radio_button = st.radio("Scenarios", ["Preset 1", "Preset 2", "Custom"])
+            if radio_button == "Custom":
+                with st.expander("Options"):
+                    exclusion_buttons = {}
+                    if mode == "Wind":
+                        exclusion_options = test_exclusions
+                    else:
+                        exclusion_options = test_exclusions#common_exclusions+solar_exclusions
+
+                    for ex in exclusion_options:
+                        st.write(ex)
+                        x = st.checkbox(ex)
+                        exclusion_buttons[ex] = x
+            if radio_button == "Preset 1":
+                exclusion_buttons = {"Wind Speed":True}
+            if radio_button == "Preset 2":
+                exclusion_buttons = {"Wind Speed":True, "Slope": True}
+                    
+
+            st.download_button("Download Map", "null", f"{area}-{mode}.txt")
+            #st.multiselect("Toggleable Criteria", wind_exclusions+common_exclusions)
+
+
 if go_button:
     m = geemap.Map(center=[55.3, 0], zoom=4)
     uk_adm2 = ee.FeatureCollection("FAO/GAUL/2015/level2").filter("ADM0_CODE == 256").filter(f"ADM2_NAME == '{area}'")
     m.addLayer(uk_adm2)
     m.centerObject(uk_adm2)
+    image_exclusion = []
+    for x in exclusion_buttons.keys():
+        st.write(x)
+        if exclusion_buttons[x]:
+            image_exclusion.append(exclusions_dict[x])
+            print(exclusions_dict[x])
+
+    windpower_adj = compute_exclusions(image_exclusion, ee.Image('projects/data-sunlight-311713/assets/wind_power')).clip(uk_adm2)
+    m.addLayer(windpower_adj)
     folium_static(m)
+
 
 
 #Exclusion(label="test", exclusion = ee.Terrain.slope(ee.Image("CGIAR/SRTM90_V4")).gt(15))
 
-
-
-with st.sidebar:
-    with st.container():
-        st.header("Toggle Exclusion Criteria")
-        radio_button = st.radio("Scenarios", ["Preset 1", "Preset 2", "Custom"])
-        if radio_button == "Custom":
-            with st.expander("Options"):
-                if mode == "Wind":
-                    exclusion_options = common_exclusions+wind_exclusions
-                else:
-                    exclusion_options = common_exclusions+solar_exclusions
-
-                for ex in exclusion_options:
-                    st.checkbox(ex)
-        st.download_button("Download Map", "null", f"{area}-{mode}.txt")
-        #st.multiselect("Toggleable Criteria", wind_exclusions+common_exclusions)
 
 
