@@ -17,7 +17,12 @@ ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
 
 exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
 "Slope": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
-"Transmission Lines":ee.FeatureCollection('projects/data-sunlight-311713/assets/transmission').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1)}
+"Transmission Lines":ee.FeatureCollection('projects/data-sunlight-311713/assets/transmission').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Roads": ee.FeatureCollection('projects/data-sunlight-311713/assets/UK_Roads_Buffer_200m').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Peatland": ee.FeatureCollection('projects/data-sunlight-311713/assets/merged_peatlands').reduceToImage(properties = ['Shape__Are'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Woodlands": ee.FeatureCollection('projects/data-sunlight-311713/assets/woodlands').reduceToImage(properties= ['FEATCODE'], reducer = ee.Reducer.first()).unmask().lt(1),
+"Cycle Paths": ee.FeatureCollection('projects/data-sunlight-311713/assets/cyclenet').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Railway": ee.FeatureCollection('projects/data-sunlight-311713/assets/traintracks').reduceToImage(properties = ['FEATCODE'], reducer = ee.Reducer.first()).unmask().lt(1)}
 
 test_exclusions = list(exclusions_dict.keys())
 
@@ -58,7 +63,7 @@ with st.form("Parameters"):
     with st.sidebar:
         with st.container():
             st.header("Toggle Exclusion Criteria")
-            radio_button = st.radio("Scenarios", ["Preset 1", "Preset 2", "Custom"])
+            radio_button = st.radio("Scenarios", ["Maximum Exclusions", "Allow on Peatland", "Custom"])
             if radio_button == "Custom":
                 with st.expander("Options"):
                     exclusion_buttons = {}
@@ -71,9 +76,9 @@ with st.form("Parameters"):
                         st.write(ex)
                         x = st.checkbox(ex)
                         exclusion_buttons[ex] = x
-            if radio_button == "Preset 1":
-                exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True}
-            if radio_button == "Preset 2":
+            if radio_button == "Maximum Exclusions":
+                exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True, "Roads":True}
+            if radio_button == "Allow on Peatland":
                 exclusion_buttons = {"Wind Speed":True, "Slope": True}
                     
 
@@ -88,13 +93,14 @@ if go_button:
     m.centerObject(uk_adm2)
     image_exclusion = []
     for x in exclusion_buttons.keys():
-        st.write(x)
         if exclusion_buttons[x]:
             image_exclusion.append(exclusions_dict[x])
             print(exclusions_dict[x])
 
     windpower_adj = compute_exclusions(image_exclusion, ee.Image('projects/data-sunlight-311713/assets/wind_power')).clip(uk_adm2)
-    m.addLayer(windpower_adj)
+    windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
+
+    m.addLayer(windpower_adj, {"min":1, "max":1000})
     folium_static(m)
 
 
