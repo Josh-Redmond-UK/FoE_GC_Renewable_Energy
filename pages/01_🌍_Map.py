@@ -19,7 +19,7 @@ polys_list = load_csv_list("constituencies_names.csv")[1:]
 
 
 service_account = st.secrets['username']
-credentials = ee.ServiceAccountCredentials(service_account, st.secrets['gcp_service_account'])
+credentials = ee.from_service_account_info(st.secrets['gcp_service_account'])
 ee.Initialize(credentials)
 
 
