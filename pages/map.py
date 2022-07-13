@@ -89,30 +89,6 @@ with st.form("Parameters"):
 
 
 
-    # with st.sidebar:
-    #     with st.container():
-    #         st.header("Toggle Exclusion Criteria")
-    #         radio_button = st.radio("Scenarios", ["Maximum Exclusions", "Allow on Peatland", "Custom"])
-    #         if radio_button == "Custom":
-    #             with st.expander("Options"):
-    #                 exclusion_buttons = {}
-    #                 if mode == "Wind":
-    #                     exclusion_options = test_exclusions
-    #                 else:
-    #                     exclusion_options = test_exclusions#common_exclusions+solar_exclusions
-
-    #                 for ex in exclusion_options:
-    #                     st.write(ex)
-    #                     x = st.checkbox(ex)
-    #                     exclusion_buttons[ex] = x
-    #         if radio_button == "Maximum Exclusions":
-    #             exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True, "Roads":True}
-    #         if radio_button == "Allow on Peatland":
-    #             exclusion_buttons = {"Wind Speed":True, "Slope": True}
-                    
-
-    #         st.download_button("Download Map", "null", f"{area}-{mode}.txt")
-    #         #st.multiselect("Toggleable Criteria", wind_exclusions+common_exclusions)
 
 
 if go_button:
@@ -128,13 +104,18 @@ if go_button:
 
     windpower_adj = compute_exclusions(image_exclusion, ee.Image('projects/data-sunlight-311713/assets/wind_power')).clip(uk_adm2)
     windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
+    
+    pix_area = windpower_adj.pixelArea().reduceRegion(
+  reducer= ee.Reducer.sum(),
+  geometry= uk_adm2,
+  scale= 10).get('area').getInfo()
 
-    windpower_zone_id = windpower_adj.gt(0).connectedComponents(
-  connectedness = ee.Kernel.plus(1),
-  maxSize= 256);
+    st.write("total output", pix_area/1000*19, "MW")
+
 
     windpower_cand_zones = windpower_adj.gt(0).pixelArea()
     m.addLayer(windpower_adj, {"min":1, "max":1000})
+
     folium_static(m, width=1400, height=700)
     st.download_button("Download Map", "null", f"{area}-{mode}.txt")
 
