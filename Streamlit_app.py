@@ -16,7 +16,8 @@ ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
 
 
 exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
-"Slope": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15)}
+"Slope": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
+"Transmission Lines":ee.FeatureCollection('projects/data-sunlight-311713/assets/transmission').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1)}
 
 test_exclusions = list(exclusions_dict.keys())
 
@@ -71,7 +72,7 @@ with st.form("Parameters"):
                         x = st.checkbox(ex)
                         exclusion_buttons[ex] = x
             if radio_button == "Preset 1":
-                exclusion_buttons = {"Wind Speed":True}
+                exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True}
             if radio_button == "Preset 2":
                 exclusion_buttons = {"Wind Speed":True, "Slope": True}
                     
