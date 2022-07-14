@@ -23,7 +23,7 @@ testframe['Wind Energy Estimate (GW)'] = testframe['sum']/1000 * 19.8 / 1000
 testframe['Solar Energy Estimate (GW)'] = testframe['sum']/1000 * 200 / 1000
 testframe['Total Area Available for Devleopment (Km/2)'] = testframe['sum']/1000 
 
-data = testframe[['Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)' 'pcon19nm']]
+data = testframe[['Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)', 'pcon19nm']]
 
 
 #st.dataframe(testframe)
