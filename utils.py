@@ -33,6 +33,6 @@ class Exclusion():
 def compute_exclusions(exclusions, base):
     temp_base = base
     for e in exclusions:
-        temp_base = temp_base.and(exclusions)
+        temp_base = temp_base.And(exclusions)
 
     return temp_base
