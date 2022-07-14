@@ -22,6 +22,7 @@ data = data.rename_axis("Constituency")
 display_df = st.session_state['exclusion_buttons_side']
 display_df = display_df.style.hide_columns()
 st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
+
 # Output dataframe
 st.dataframe(data = data.style.format({"Available wind area (sq.km)": "{:20,.0f}", 
                           "Expected wind output (MW)": "{:20,.0f}", 
