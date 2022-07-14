@@ -32,8 +32,10 @@ class Exclusion():
 
 def compute_exclusions(exclusions, base):
     temp_base = base
+
     for e in exclusions:
-        temp_base = temp_base.And(exclusions)
+        temp_base.addBands(e)
+        #temp_base = temp_base.And(exclusions)
     st.write(base.bandNames().getInfo())
     st.write(temp_base.bandNames().getInfo())
-    return base.updateMask(temp_base)
+    return base.And(temp_base)
