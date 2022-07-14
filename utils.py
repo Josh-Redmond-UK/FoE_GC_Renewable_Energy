@@ -32,6 +32,6 @@ class Exclusion():
 
 def compute_exclusions(exclusions, base):
     for e in exclusions:
-        base = base.multiply(exclusions)
+        base = base.multiply(e)
 
     return base
