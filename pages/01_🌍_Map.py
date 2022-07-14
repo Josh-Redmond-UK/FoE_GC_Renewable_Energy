@@ -180,13 +180,7 @@ if go_button:
 
     windpower_adj = compute_exclusions(image_exclusion, power).clip(uk_adm2)
     windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
-    
-    pix_area = windpower_adj.pixelArea().reduceRegion(
-    reducer= ee.Reducer.sum(),
-    geometry= uk_adm2,
-    scale= 10, bestEffort=True).get('area').getInfo()
 
-    st.write("total output", pix_area/1000*19, "MW")
 
     empty = ee.Image().byte()
 
