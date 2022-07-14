@@ -19,8 +19,7 @@ polys_list = load_csv_list("constituencies_names.csv")[1:]
 
 
 #credentials = service_account.Credentials.from_service_account_info(st.secrets['username'], st.secrets["gcp_service_account"])
-ee.Initialize()#credentials)
-
+ee.Initialize()
 
 # Intialize earth engine
 #ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
