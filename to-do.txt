@@ -5,6 +5,12 @@
 2. Table page:
     a. Set up columns for wind/solar DONE
     b. Put totals into (exportable?) table DONE
-    c. Put exclusions in sidebar (maybe for all tabs?)
+    c. Put exclusions in sidebar (maybe for all tabs?) DONE
+    d. Make exclusions pretty
 3. General:
-    a. Emoji-fy exclusions (at the end!) 
+    a. Emoji-fy exclusions (at the end!)
+    b. Fix AONB exclusions
+    c. Airport exclusions?
+    d. Fix greenspace exclusions
+4. Map page:
+    a. Rework UI a little (exclusions)

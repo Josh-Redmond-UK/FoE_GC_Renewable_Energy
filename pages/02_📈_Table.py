@@ -18,6 +18,9 @@ data = pd.DataFrame(np.random.randint(7, 12000, size = (650, 4)), columns = ["Av
 data = data.set_index(constituencies["Constituency"])
 data = data.rename_axis("Constituency")
 
+# Put session state (exclusions) in sidebar
+st.sidebar.dataframe(st.session_state['exclusion_buttons_side'])
+
 # Output dataframe
 st.dataframe(data = data.style.format({"Available wind area (sq.km)": "{:20,.0f}", 
                           "Expected wind output (MW)": "{:20,.0f}", 
