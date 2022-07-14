@@ -31,10 +31,9 @@ class Exclusion():
         #self.criteria = criteria
 
 def compute_exclusions(exclusions, base):
-    temp_base = base
 
     for e in exclusions:
         st.write(e)
-        temp_base.multiply(e)
+        base.multiply(e)
 
-    return temp_base
+    return base
