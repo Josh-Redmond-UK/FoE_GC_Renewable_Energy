@@ -20,7 +20,16 @@ def area_change_callback(name, features, map):
 def load_csv_list(path):
     return  list(pd.read_csv(path)['pcon19nm'])
 
+def get_build_up_area_buffer(distance=200):
+    landcover = ee.ImageCollection("ESA/WorldCover/v100").first()
 
+    urban_land = landcover.eq(50)
+    cost_surface = ee.Image.constant(1)
+    proj = ee.Projection(landcover.projection())
+
+    build_dist = cost_surface.reproject(proj).cumulativeCost(urban_land, distance)
+    buffer = build_dist.add(1).gt(0)
+    return buffer
 
 class Exclusion():
     def __init__(self, exclusion, label):
