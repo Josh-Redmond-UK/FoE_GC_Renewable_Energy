@@ -14,8 +14,23 @@ constituencies = pd.read_csv("constituencies_names.csv")
 constituencies = constituencies.rename(columns = {"pcon19nm" : "Constituency"})
 
 # Random numbers for data
-data = pd.DataFrame(np.random.randint(7, 12000, size = (650, 4)), columns = ["Available wind area (sq.km)", "Expected wind output (MW)", "Available solar area (sq. km)", "Expected solar output (MW)"])
-data = data.set_index(constituencies["Constituency"])
+#data = pd.DataFrame(np.random.randint(7, 12000, size = (650, 4)), columns = ["Available wind area (sq.km)", "Expected wind output (MW)", "Available solar area (sq. km)", "Expected solar output (MW)"])
+
+testframe = pd.read_csv("test_csv.csv")
+
+
+testframe['Wind Energy Estimate (GW)'] = testframe['sum']/1000 * 19.8 / 1000
+testframe['Solar Energy Estimate (GW)'] = testframe['sum']/1000 * 200 / 1000
+testframe['Total Area Available for Devleopment (Km/2)'] = testframe['sum']/1000 
+
+data = testframe[['Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)', 'pcon19nm']]
+
+
+#st.dataframe(testframe)
+
+
+data = data.set_index(data["pcon19nm"])
+data = data[['Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)']]
 data = data.rename_axis("Constituency")
 
 # Put session state (exclusions) in sidebar
@@ -32,12 +47,12 @@ st.dataframe(data = data.style.format({"Available wind area (sq.km)": "{:20,.0f}
 
 # Calculate total potential
 potentials = pd.DataFrame()
-potentials["Total wind energy potential (MW)"] = [data["Expected wind output (MW)"].sum()]
-potentials["Total solar energy potential (MW)"] = [data["Expected solar output (MW)"].sum()]
+potentials["Total wind energy potential (GW)"] = [data["Wind Energy Estimate (GW)"].sum()]
+potentials["Total solar energy potential (GW)"] = [data["Solar Energy Estimate (GW)"].sum()]
 
 # Output potentials dataframe
-style = potentials.style.hide_index().format({"Total wind energy potential (MW)": "{:20,.0f}",
-                                             "Total solar energy potential (MW)": "{:20,.0f}"})
+style = potentials.style.hide_index().format({"Total wind energy potential (GW)": "{:20,.0f}",
+                                             "Total solar energy potential (GW)": "{:20,.0f}"})
 st.write(style.to_html(), unsafe_allow_html=True)
 
 # some whitespace to separate table from button

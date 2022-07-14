@@ -2,6 +2,7 @@
 import streamlit as st
 from google.oauth2 import service_account
 import json, tempfile
+import pandas as pd
 # Set page config
 st.set_page_config(page_title = "Map output", layout="wide")
 
@@ -54,8 +55,8 @@ ee.Initialize(credentials)
 #ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
 
 # Exclusion zones
-exclusions_dict = {"Wind Speed 💨": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
-"Slope 🗻": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
+exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
+"Slope": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
 "Transmission Lines":ee.FeatureCollection('projects/data-sunlight-311713/assets/transmission').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Roads": ee.FeatureCollection('projects/data-sunlight-311713/assets/UK_Roads_Buffer_200m').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Peatland": ee.FeatureCollection('projects/data-sunlight-311713/assets/merged_peatlands').reduceToImage(properties = ['Shape__Are'], reducer= ee.Reducer.first()).unmask().lt(1),
@@ -66,7 +67,8 @@ exclusions_dict = {"Wind Speed 💨": ee.Image('projects/data-sunlight-311713/as
 "Protected Areas": ee.FeatureCollection("projects/data-sunlight-311713/assets/gb_protected_areas_nobuffer").reduceToImage(properties= ['Shape_Area'], reducer= ee.Reducer.first()).unmask().gt(0).eq(0),
 "Surface Water":ee.FeatureCollection('projects/data-sunlight-311713/assets/UK_SurfaceWater_Area_Buffer_50m').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Cultural Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/england_culturalsites').reduceToImage(properties = ['ListEntry'], reducer = ee.Reducer.first()).unmask().lt(1),
-"Parks and Green Space": ee.FeatureCollection("projects/data-sunlight-311713/assets/GreenspaceEngArea").reduceToImage(properties= ['areaHa'], reducer= ee.Reducer.first()).unmask().lt(1)}
+"Parks and Green Space": ee.FeatureCollection("projects/data-sunlight-311713/assets/GreenspaceEngArea").reduceToImage(properties= ['areaHa'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Functional Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/Functional_sites').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1)}
 
 test_exclusions = list(exclusions_dict.keys())
 
@@ -154,7 +156,8 @@ st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
 if go_button:
 
     m = geemap.Map(center=[55.3, 0], zoom=6)
-    uk_adm2 = ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC").filter(f"pcon19nm == '{area}'")
+    uk_adm2_all = ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC")#.filter(f"pcon19nm == '{area}'")
+    uk_adm2 = uk_adm2_all.filter(f"pcon19nm == '{area}'")
     m.centerObject(uk_adm2)
     image_exclusion = []
 
@@ -180,9 +183,9 @@ if go_button:
     pix_area = windpower_adj.pixelArea().reduceRegion(
     reducer= ee.Reducer.sum(),
     geometry= uk_adm2,
-    scale= 50, maxPixels=99999999999999999, bestEffort=True).get('area').getInfo()
+    scale= 10, bestEffort=True).get('area').getInfo()
 
-# st.write("total output", pix_area/1000*19, "MW")
+    st.write("total output", pix_area/1000*19, "MW")
 
     empty = ee.Image().byte()
 
@@ -200,10 +203,18 @@ if go_button:
 
 
     m.addLayer(windpower_adj, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
-    m.add_colorbar_branca(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
+    m.add_colorbar(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
+    m.addLayerControl() 
     folium_static(m, width=800, height=700)
-    st.download_button("Download Map", "null", f"{area}-{mode}.txt")
+    geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
 
+
+    # download_map_button = st.button("Download Map")
+
+    # if download_map_button:
+
+    #     test = power.getDownloadURL()
+    #     st.write(test)
 
 
 
