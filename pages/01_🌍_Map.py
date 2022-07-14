@@ -18,8 +18,8 @@ from utils import *
 polys_list = load_csv_list("constituencies_names.csv")[1:]
 
 
-credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
-ee.Initialize(credentials)
+#credentials = service_account.Credentials.from_service_account_info(st.secrets['username'], st.secrets["gcp_service_account"])
+ee.Initialize()#credentials)
 
 
 # Intialize earth engine
@@ -33,7 +33,13 @@ exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/
 "Peatland": ee.FeatureCollection('projects/data-sunlight-311713/assets/merged_peatlands').reduceToImage(properties = ['Shape__Are'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Woodlands": ee.FeatureCollection('projects/data-sunlight-311713/assets/woodlands').reduceToImage(properties= ['FEATCODE'], reducer = ee.Reducer.first()).unmask().lt(1),
 "Cycle Paths": ee.FeatureCollection('projects/data-sunlight-311713/assets/cyclenet').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Railway": ee.FeatureCollection('projects/data-sunlight-311713/assets/traintracks').reduceToImage(properties = ['FEATCODE'], reducer = ee.Reducer.first()).unmask().lt(1)}
+"Railway": ee.FeatureCollection('projects/data-sunlight-311713/assets/traintracks').reduceToImage(properties = ['FEATCODE'], reducer = ee.Reducer.first()).unmask().lt(1),
+"Areas of Natural Beauty": ee.FeatureCollection("projects/data-sunlight-311713/assets/Areas_of_Outstanding_Natural_Beauty_England").reduceToImage(properties= ['stat_area'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Protected Areas": ee.FeatureCollection("projects/data-sunlight-311713/assets/gb_protected_areas_nobuffer").reduceToImage(properties= ['Shape_Area'], reducer= ee.Reducer.first()).unmask().gt(0).eq(0),
+"Surface Water":ee.FeatureCollection('projects/data-sunlight-311713/assets/UK_SurfaceWater_Area_Buffer_50m').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Cultural Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/england_culturalsites').reduceToImage(properties = ['ListEntry'], reducer = ee.Reducer.first()).unmask().lt(1),
+"Parks and Green Space": ee.FeatureCollection("projects/data-sunlight-311713/assets/GreenspaceEngArea").reduceToImage(properties= ['areaHa'], reducer= ee.Reducer.first()).unmask().lt(1)
+}
 
 test_exclusions = list(exclusions_dict.keys())
 
@@ -50,7 +56,8 @@ common_exclusions = ["Roads",
 "Heritage Sites",
 "Existing Renewable Projects",
 "Peatland",
-"Protected Areas"]
+"Protected Areas",
+"Areas of Natural Beauty"]
 
 solar_exclusions = ["Solar Insolation",
 "Agricultural Land",
@@ -84,10 +91,11 @@ with st.form("Parameters"):
                 #st.write(ex)
                 x = st.checkbox(ex)
                 exclusion_buttons[ex] = x
+                
         if radio_button == "Maximum Exclusions":
-            exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True, "Roads":True, "Slope": True, "Peatland": True, "Woodlands":True, "Cycle Paths": True, "Railway": True}
+            exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True, "Roads":True, "Slope": True, "Peatland": True, "Woodlands":True, "Cycle Paths": True, "Railway": True, "Protected Areas":True, 'Areas of Natural Beauty':True, "Surface Water": True, "Cultural Sites": True, "Parks and Green Space":True}
         if radio_button == "Allow on Peatland":
-            exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True, "Roads":True, "Slope": True, "Peatland": False, "Woodlands":True, "Cycle Paths": True, "Railway": True}
+            exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True, "Roads":True, "Slope": True, "Peatland": False, "Woodlands":True, "Cycle Paths": True, "Railway": True, "Protected Areas":True, 'Areas of Natural Beauty':True, "Surface Water": True}
                 
 
         #st.multiselect("Toggleable Criteria", wind_exclusions+common_exclusions)
@@ -102,20 +110,24 @@ if go_button:
     m.addLayer(uk_adm2, {}, f"{area}", True, 0.5)
     m.centerObject(uk_adm2)
     image_exclusion = []
+
     for x in exclusion_buttons.keys():
+       # st.write(x)
+       # st.write(exclusion_buttons[x])
         if exclusion_buttons[x]:
             image_exclusion.append(exclusions_dict[x])
-            #st.write(exclusions_dict[x])
+       #     st.write(exclusions_dict[x])
 
     windpower_adj = compute_exclusions(image_exclusion, ee.Image('projects/data-sunlight-311713/assets/wind_power')).clip(uk_adm2)
     windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
     
     pix_area = windpower_adj.pixelArea().reduceRegion(
-  reducer= ee.Reducer.sum(),
-  geometry= uk_adm2,
-  scale= 10).get('area').getInfo()
+    reducer= ee.Reducer.sum(),
+    geometry= uk_adm2,
+    scale= 10).get('area').getInfo()
 
     st.write("total output", pix_area/1000*19, "MW")
+
 
 
     windpower_cand_zones = windpower_adj.gt(0).pixelArea()
