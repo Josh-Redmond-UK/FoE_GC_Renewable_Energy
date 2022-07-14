@@ -145,14 +145,16 @@ if go_button:
     image_exclusion = []
 
     for x in exclusion_buttons.keys():
+        st.write(x)
        # st.write(x)
        # st.write(exclusion_buttons[x])
         if exclusion_buttons[x]:
+            st.write("True")
             image_exclusion.append(exclusions_dict[x])
        #     st.write(exclusions_dict[x])
 
     windpower_adj = compute_exclusions(image_exclusion, ee.Image('projects/data-sunlight-311713/assets/wind_power')).clip(uk_adm2)
-    windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
+    #windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
     
     pix_area = windpower_adj.pixelArea().reduceRegion(
     reducer= ee.Reducer.sum(),

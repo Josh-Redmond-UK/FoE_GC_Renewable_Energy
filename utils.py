@@ -35,4 +35,4 @@ def compute_exclusions(exclusions, base):
     for e in exclusions:
         temp_base = temp_base.And(exclusions)
 
-    return temp_base
+    return base.updateMask(temp_base)
