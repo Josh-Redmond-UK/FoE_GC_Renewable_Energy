@@ -9,19 +9,26 @@ More information about our datasets used can be found [here](https://docs.google
 Our GitHub repository can be found [here](https://github.com/Josh-Redmond-UK/FoE_GC_Renewable_Energy).
 
 ### Meet our team:
+![Josh Redmond](josh-redmond-photo.jpg)
+Josh Redmond: *"I am a PhD student at Exeter University studying the use of satellite images as forensics in Human Rights Cases within a participatory design framework"*
 
-Josh Redmond: *"I am..."*
-
+![Arthur Vandervoort](arthur_vandervoort.jpg)
 Arthur Vandervoort: *"I'm a PhD student at the University of Exeter's CDT in Environmental Intelligence, researching the impact of gender on urban mobility patterns."*
 
+![Ellie Fox](Ellie_Fox.jpg)
 Ellie Fox: *"I am a PhD student in Environmental Intelligence at the University of Exeter, researching how melting glaciers impact downstream communities."*
 
+![Alice Lake](alice_lake.jpg)
 Alice Lake: *"I am a Foundation Scientist at the Met Office, working in the Post-processing Applications team."*
 
+![Danielle Waters](Danielle Waters.jpg)
 Danielle Waters: *"I work as a freelance hydrographic surveyor, primarily working within the offshore wind renewable sector."*
 
+![Matthew Hayslep](Matthew Hayslep.jpg)
 Matthew Hayslep: *"I am a PhD student at the University of Exeter, researching leakage in water distribution systems using machine learning."*
 
+![Rodrigo Arce](Rodrigo_Arce.png)
 Rodrigo Arce: *"I work at Google in the Google Cloud Platform team, giving support to clients who use data analysis products."*
+
 
 Elizabeth Galloway: 
