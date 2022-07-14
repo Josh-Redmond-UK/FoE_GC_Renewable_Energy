@@ -8,7 +8,7 @@ st.set_page_config(page_title = "Map output", layout="wide")
 from streamlit_folium import folium_static, st_folium
 import ee
 
-import geemap as geemap
+import geemap.eefolium as geemap
 
 
 from utils import *
@@ -177,8 +177,7 @@ if go_button:
 
     m.addLayer(windpower_adj, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
     m.add_colorbar_branca(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
-    m.to_streamlit()
-    #folium_static(m, height=700)
+    folium_static(m, width=800, height=700)
     st.download_button("Download Map", "null", f"{area}-{mode}.txt")
 
 
