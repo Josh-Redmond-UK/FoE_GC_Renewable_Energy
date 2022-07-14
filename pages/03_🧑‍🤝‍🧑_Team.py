@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+st.set_page_config(page_title = "The Team")
 
 st.markdown('''
 ### Meet our team:''')
@@ -66,7 +67,7 @@ def lizzy():
         with c2:
             st.markdown('''Elizabeth Galloway: ''')
 
-team = [josh, arthur, danielle, alice, matthew, rodrigo, lizzy]
+team = [josh, arthur, danielle, alice, matthew, rodrigo, lizzy, ellie]
 
 random.shuffle(team)
 
