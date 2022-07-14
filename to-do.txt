@@ -12,5 +12,6 @@
     b. Fix AONB exclusions
     c. Airport exclusions?
     d. Fix greenspace exclusions
+    e. Write documentation for outputs
 4. Map page:
     a. Rework UI a little (exclusions)

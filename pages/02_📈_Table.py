@@ -7,7 +7,7 @@ import numpy as np
 st.set_page_config(page_title = "UK Renewables Table")
 
 # Page title
-st.title("UK Renewables Table")
+#st.title("UK Renewables Table")
 
 # Read in county names
 constituencies = pd.read_csv("constituencies_names.csv")
@@ -19,8 +19,9 @@ data = data.set_index(constituencies["Constituency"])
 data = data.rename_axis("Constituency")
 
 # Put session state (exclusions) in sidebar
-st.sidebar.dataframe(st.session_state['exclusion_buttons_side'])
-
+display_df = st.session_state['exclusion_buttons_side']
+display_df = display_df.style.hide_columns()
+st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
 # Output dataframe
 st.dataframe(data = data.style.format({"Available wind area (sq.km)": "{:20,.0f}", 
                           "Expected wind output (MW)": "{:20,.0f}", 

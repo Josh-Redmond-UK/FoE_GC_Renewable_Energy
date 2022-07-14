@@ -20,7 +20,7 @@ polys_list = load_csv_list("constituencies_names.csv")[1:]
 
 
 
-service_account = st.secrets['service_account']
+# service_account = st.secrets['service_account']
 
 data = {}
 data['type'] = st.secrets['other_keys']['type']
@@ -34,6 +34,11 @@ data['token_uri'] = st.secrets['other_keys']['token_uri']
 data['auth_provider_x509_cert_url'] = st.secrets['other_keys']['auth_provider_x509_cert_url']
 data['client_x509_cert_url'] = st.secrets['other_keys']['client_x509_cert_url']
 
+tfile = tempfile.NamedTemporaryFile(mode="w+")
+json.dump(data, tfile)
+tfile.flush()
+credentials = ee.ServiceAccountCredentials(service_account, tfile.name)
+ee.Initialize(credentials)
 
 tfile = tempfile.NamedTemporaryFile(mode="w+")
 json.dump(data, tfile)
@@ -87,7 +92,7 @@ solar_exclusions = ["Solar Insolation",
 "Slope > 10"]
 
 # Streamlit formatting
-st.title("UK Renewables Map", anchor=None)
+#st.title("UK Renewables Map", anchor=None)
 
 with st.form("Parameters"):
     st.header("Map Options")
