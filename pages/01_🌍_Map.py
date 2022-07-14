@@ -122,20 +122,9 @@ with st.form("Parameters"):
 
         #st.multiselect("Toggleable Criteria", wind_exclusions+common_exclusions)
 
-# Save exclusions buttons output in session state to display between pages
-exclusion_buttons_side = pd.DataFrame.from_dict(exclusion_buttons, orient = "index")
-
-if 'exclusion_buttons_side' not in st.session_state:
-    st.session_state['exclusion_buttons_side'] = exclusion_buttons_side
-if go_button:
-    st.session_state['exclusion_buttons_side'] = exclusion_buttons_side
-
-display_df = st.session_state['exclusion_buttons_side']
-display_df = display_df.style.hide_columns()
-st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
 
 
-#st.sidebar.dataframe(display_df)
+
 
 if go_button:
     m = geemap.Map(center=[55.3, 0], zoom=6)
@@ -145,30 +134,26 @@ if go_button:
     image_exclusion = []
 
     for x in exclusion_buttons.keys():
-        st.write(x)
        # st.write(x)
        # st.write(exclusion_buttons[x])
         if exclusion_buttons[x]:
-            st.write("True")
             image_exclusion.append(exclusions_dict[x])
        #     st.write(exclusions_dict[x])
 
-    windpower = ee.Image('projects/data-sunlight-311713/assets/wind_power').clip(uk_adm2)
-    windpower_adj_mask = compute_exclusions(image_exclusion, windpower)
-    windpower_adj = windpower.updateMask(windpower_adj_mask.gt(0))
+    windpower_adj = compute_exclusions(image_exclusion, ee.Image('projects/data-sunlight-311713/assets/wind_power')).clip(uk_adm2)
+    windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
     
     pix_area = windpower_adj.pixelArea().reduceRegion(
     reducer= ee.Reducer.sum(),
     geometry= uk_adm2,
-    scale= 10, maxPixels=99999999999999999, bestEffort=True).get('area').getInfo()
+    scale= 50, maxPixels=99999999999999999, bestEffort=True).get('area').getInfo()
 
-   # st.write("total output", pix_area/1000*19, "MW")
-
+    st.write("total output", pix_area/1000*19, "MW")
 
 
 
     windpower_cand_zones = windpower_adj.gt(0).pixelArea()
-    m.addLayer(windpower_adj_mask, {"min":1, "max":1000})
+    m.addLayer(windpower_adj, {"min":1, "max":1000})
 
     folium_static(m, width=1400, height=700)
     st.download_button("Download Map", "null", f"{area}-{mode}.txt")
