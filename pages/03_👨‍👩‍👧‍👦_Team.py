@@ -1,37 +1,34 @@
 import streamlit as st
 
 
-st.markdown('''### Welcome to the homepage of our project mapping the UK's solar and on-shore wind energy potential!
+st.markdown('''
+### Meet our team:''')
 
-This project was carried out as part of the 2022 Environmental Intelligence Grand Challenge Hackathon, which took place at the University of Exeter between 11-15th July, hosted by the [EICDT](https://www.exeter.ac.uk/research/eicdt/).
+with st.container():
+    c1, c2 = st.columns(2)
+    with c1:
+        st.image('josh-redmond-photo.jpg')
+    with c2:
+        st.markdown('''Josh Redmond: *"I am a PhD student at Exeter University studying the use of satellite images as forensics in Human Rights Cases within a participatory design framework"*''')
 
-Our challenge description from [Friends of the Earth](https://friendsoftheearth.uk/) was:
-*"Renewable energy is essential for decarbonisation and climate mitigation, but it is very difficult to find suitable land to build new wind and solar facilities. Energy demand must be balanced against food and conservation needs, taking into account prevailing weather and the preferences of the local community – all in an uncertain future environment. This challenge will combine data from diverse sources (climate, land use, planning, social) to determine the most suitable locations for renewable energy and help local authorities make effective decisions."*
-
-More information about our datasets used can be found [here](https://docs.google.com/document/d/1gQbY1mPs2MjZjMS0_X15yEfpNTeCOegEoz4wCTuOxZ8/edit?usp=sharing).
-Our GitHub repository can be found [here](https://github.com/Josh-Redmond-UK/FoE_GC_Renewable_Energy).
-
-### Meet our team:
-![Josh Redmond](josh-redmond-photo.jpg)
-Josh Redmond: *"I am a PhD student at Exeter University studying the use of satellite images as forensics in Human Rights Cases within a participatory design framework"*
-
-![Arthur Vandervoort](arthur_vandervoort.jpg)
-Arthur Vandervoort: *"I'm a PhD student at the University of Exeter's CDT in Environmental Intelligence, researching the impact of gender on urban mobility patterns."*
-
-![Ellie Fox](Ellie_Fox.jpg)
-Ellie Fox: *"I am a PhD student in Environmental Intelligence at the University of Exeter, researching how melting glaciers impact downstream communities."*
-
-![Alice Lake](alice_lake.jpg)
-Alice Lake: *"I am a Foundation Scientist at the Met Office, working in the Post-processing Applications team."*
-
-![Danielle Waters](Danielle Waters.jpg)
-Danielle Waters: *"I work as a freelance hydrographic surveyor, primarily working within the offshore wind renewable sector."*
-
-![Matthew Hayslep](Matthew Hayslep.jpg)
-Matthew Hayslep: *"I am a PhD student at the University of Exeter, researching leakage in water distribution systems using machine learning."*
-
-![Rodrigo Arce](Rodrigo_Arce.png)
-Rodrigo Arce: *"I work at Google in the Google Cloud Platform team, giving support to clients who use data analysis products."*
+st.image('arthur_vandervoort.jpg')
+st.markdown('''Arthur Vandervoort: *"I'm a PhD student at the University of Exeter's CDT in Environmental Intelligence, researching the impact of gender on urban mobility patterns."*' ''')
 
 
-Elizabeth Galloway: ''')
+st.image('Ellie_Fox.jpg')
+st.markdown('Ellie Fox: *"I am a PhD student in Environmental Intelligence at the University of Exeter, researching how melting glaciers impact downstream communities."*')
+
+st.image('alice_lake.jpg')
+st.markdown('Alice Lake: *"I am a Foundation Scientist at the Met Office, working in the Post-processing Applications team."*')
+
+st.image('Danielle Waters.jpg')
+st.markdown('Danielle Waters: *"I work as a freelance hydrographic surveyor, primarily working within the offshore wind renewable sector."*')
+
+st.image('Matthew Hayslep.jpg')
+st.markdown('Matthew Hayslep: *"I am a PhD student at the University of Exeter, researching leakage in water distribution systems using machine learning."*')
+
+st.image('Rodrigo_Arce.png')
+st.markdown('Rodrigo Arce: *"I work at Google in the Google Cloud Platform team, giving support to clients who use data analysis products."*')
+
+
+st.markdown('''Elizabeth Galloway: ''')
