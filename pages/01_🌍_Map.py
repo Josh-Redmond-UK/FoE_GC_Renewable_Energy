@@ -155,7 +155,7 @@ st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
 if go_button:
 
     m = geemap.Map(center=[55.3, 0], zoom=6)
-    uk_adm2_all = ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC").filter(f"pcon19nm == '{area}'")
+    uk_adm2_all = ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC")#.filter(f"pcon19nm == '{area}'")
     uk_adm2 = uk_adm2_all.filter(f"pcon19nm == '{area}'")
     m.centerObject(uk_adm2)
     image_exclusion = []
