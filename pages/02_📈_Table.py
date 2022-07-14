@@ -47,12 +47,12 @@ st.dataframe(data = data.style.format({"Available wind area (sq.km)": "{:20,.0f}
 
 # Calculate total potential
 potentials = pd.DataFrame()
-potentials["Total wind energy potential (MW)"] = [data["Wind Energy Estimate (GW)"].sum()]
+potentials["Total wind energy potential (GW)"] = [data["Wind Energy Estimate (GW)"].sum()]
 potentials["Total solar energy potential (GW)"] = [data["Solar Energy Estimate (GW)"].sum()]
 
 # Output potentials dataframe
-style = potentials.style.hide_index().format({"Total wind energy potential (MW)": "{:20,.0f}",
-                                             "Total solar energy potential (MW)": "{:20,.0f}"})
+style = potentials.style.hide_index().format({"Total wind energy potential (GW)": "{:20,.0f}",
+                                             "Total solar energy potential (GW)": "{:20,.0f}"})
 st.write(style.to_html(), unsafe_allow_html=True)
 
 # some whitespace to separate table from button
