@@ -35,3 +35,6 @@ def compute_exclusions(exclusions, base):
         base = base.multiply(e)
 
     return base
+
+def summarise_by_constituency(feat):
+    
