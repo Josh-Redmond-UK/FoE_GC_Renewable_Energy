@@ -1,7 +1,7 @@
 # Dependencies
 import streamlit as st
 from google.oauth2 import service_account
-
+import json, tempfile
 # Set page config
 st.set_page_config(page_title = "Map output", layout="wide")
 
@@ -18,8 +18,32 @@ from utils import *
 polys_list = load_csv_list("constituencies_names.csv")[1:]
 
 
+
+
+service_account = st.secrets['service_account']
+
+data = {}
+data['type'] = st.secrets['other_keys']['type']
+data['project_id'] = st.secrets['other_keys']['project_id']
+data['private_key_id'] = st.secrets['other_keys']['private_key_id']
+data['private_key'] = st.secrets['other_keys']['private_key']
+data['client_email'] = st.secrets['other_keys']['client_email']
+data['client_id'] = st.secrets['other_keys']['client_id']
+data['auth_uri'] = st.secrets['other_keys']['auth_uri']
+data['token_uri'] = st.secrets['other_keys']['token_uri']
+data['auth_provider_x509_cert_url'] = st.secrets['other_keys']['auth_provider_x509_cert_url']
+data['client_x509_cert_url'] = st.secrets['other_keys']['client_x509_cert_url']
+
+
+tfile = tempfile.NamedTemporaryFile(mode="w+")
+json.dump(data, tfile)
+tfile.flush()
+credentials = ee.ServiceAccountCredentials(service_account, tfile.name)
+ee.Initialize(credentials)
+
+
 #credentials = service_account.Credentials.from_service_account_info(st.secrets['username'], st.secrets["gcp_service_account"])
-ee.Initialize()
+#ee.Initialize()
 
 # Intialize earth engine
 #ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
@@ -37,8 +61,7 @@ exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/
 "Protected Areas": ee.FeatureCollection("projects/data-sunlight-311713/assets/gb_protected_areas_nobuffer").reduceToImage(properties= ['Shape_Area'], reducer= ee.Reducer.first()).unmask().gt(0).eq(0),
 "Surface Water":ee.FeatureCollection('projects/data-sunlight-311713/assets/UK_SurfaceWater_Area_Buffer_50m').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Cultural Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/england_culturalsites').reduceToImage(properties = ['ListEntry'], reducer = ee.Reducer.first()).unmask().lt(1),
-"Parks and Green Space": ee.FeatureCollection("projects/data-sunlight-311713/assets/GreenspaceEngArea").reduceToImage(properties= ['areaHa'], reducer= ee.Reducer.first()).unmask().lt(1)
-}
+"Parks and Green Space": ee.FeatureCollection("projects/data-sunlight-311713/assets/GreenspaceEngArea").reduceToImage(properties= ['areaHa'], reducer= ee.Reducer.first()).unmask().lt(1)}
 
 test_exclusions = list(exclusions_dict.keys())
 
