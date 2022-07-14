@@ -97,7 +97,6 @@ with st.form("Parameters"):
             mode = st.radio("Power Option", ["Solar", "Wind"])
         with col2:
             area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
-            go_button = st.form_submit_button("Draw Map")
 
         st.header("Toggle Exclusion Criteria")
         radio_button = st.radio("Scenarios", ["Maximum Exclusions", "Allow on Peatland", "Custom"])
@@ -121,6 +120,8 @@ with st.form("Parameters"):
                 
 
         #st.multiselect("Toggleable Criteria", wind_exclusions+common_exclusions)
+        go_button = st.form_submit_button("Draw Map")
+
 
 
 
