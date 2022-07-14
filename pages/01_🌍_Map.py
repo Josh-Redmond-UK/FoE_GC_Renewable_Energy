@@ -135,9 +135,14 @@ if 'exclusion_buttons_side' not in st.session_state:
 if go_button:
     st.session_state['exclusion_buttons_side'] = exclusion_buttons_side
 
+# Make the true/false dict emojis
+torf = {True : "❌", False : "✅"}
+
 display_df = st.session_state['exclusion_buttons_side']
+display_df[0] = display_df[0].map(torf)
 display_df = display_df.style.hide_columns()
 st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
+
 
 
 #st.sidebar.dataframe(display_df)
