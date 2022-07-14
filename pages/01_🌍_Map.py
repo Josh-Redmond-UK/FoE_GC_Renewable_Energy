@@ -55,8 +55,8 @@ ee.Initialize(credentials)
 #ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
 
 # Exclusion zones
-exclusions_dict = {"Wind Speed 💨": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
-"Slope 🗻": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
+exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
+"Slope": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
 "Transmission Lines":ee.FeatureCollection('projects/data-sunlight-311713/assets/transmission').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Roads": ee.FeatureCollection('projects/data-sunlight-311713/assets/UK_Roads_Buffer_200m').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Peatland": ee.FeatureCollection('projects/data-sunlight-311713/assets/merged_peatlands').reduceToImage(properties = ['Shape__Are'], reducer= ee.Reducer.first()).unmask().lt(1),
