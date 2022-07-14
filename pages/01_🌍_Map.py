@@ -175,7 +175,7 @@ if go_button:
 
 
     m.addLayer(windpower_adj, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
-
+    m.add_colorbar_branca(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
     folium_static(m, width=1400, height=700)
     st.download_button("Download Map", "null", f"{area}-{mode}.txt")
 
