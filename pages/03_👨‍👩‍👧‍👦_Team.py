@@ -11,7 +11,7 @@ with st.container():
     with c2:
         st.markdown('''Josh Redmond: *"I am a PhD student at Exeter University studying the use of satellite images as forensics in Human Rights Cases within a participatory design framework"*''')
 
-st.image('arthur_vandervoort.jpg')
+st.image('arthur_vandervoort.jpeg')
 st.markdown('''Arthur Vandervoort: *"I'm a PhD student at the University of Exeter's CDT in Environmental Intelligence, researching the impact of gender on urban mobility patterns."*' ''')
 
 
