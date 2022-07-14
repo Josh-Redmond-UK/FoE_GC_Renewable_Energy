@@ -7,9 +7,6 @@ import streamlit as st
 import ee
 st.set_page_config(page_title = "Homepage")
 
-with open('website and profiles/data.txt', 'r') as file:
-    markdown_about_string = file.read()
-
 
 
 # Sidebar title
