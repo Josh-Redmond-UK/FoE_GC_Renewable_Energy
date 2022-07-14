@@ -121,9 +121,10 @@ with st.form("Parameters"):
                 exclusion_buttons[ex] = x
                 
         if radio_button == "Maximum Exclusions":
-            exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True, "Roads":True, "Slope": True, "Peatland": True, "Woodlands":True, "Cycle Paths": True, "Railway": True, "Protected Areas":True, 'Areas of Natural Beauty':True, "Surface Water": True, "Cultural Sites": True, "Parks and Green Space":True}
+            exclusion_buttons = {key:True for key in list(exclusions_dict.keys())}
         if radio_button == "Allow on Peatland":
-            exclusion_buttons = {"Wind Speed":True, "Transmission Lines":True, "Roads":True, "Slope": True, "Peatland": False, "Woodlands":True, "Cycle Paths": True, "Railway": True, "Protected Areas":True, 'Areas of Natural Beauty':True, "Surface Water": True}
+            exclusion_buttons = {key:True for key in list(exclusions_dict.keys())}
+            exclusion_buttons['Peatland'] = False
                 
 
         #st.multiselect("Toggleable Criteria", wind_exclusions+common_exclusions)
@@ -210,7 +211,7 @@ if go_button:
 
 
     download_map_button = st.button("Download Map")
-    
+
     if download_map_button:
 
          test = power.getDownloadURL()
