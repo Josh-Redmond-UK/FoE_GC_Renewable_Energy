@@ -146,7 +146,7 @@ if go_button:
     pix_area = windpower_adj.pixelArea().reduceRegion(
     reducer= ee.Reducer.sum(),
     geometry= uk_adm2,
-    scale= 10).get('area').getInfo()
+    scale= 10, maxPixels=99999999999999999, bestEffort=True).get('area').getInfo()
 
     st.write("total output", pix_area/1000*19, "MW")
 
