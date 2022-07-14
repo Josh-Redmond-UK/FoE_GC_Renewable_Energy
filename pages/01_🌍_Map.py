@@ -135,9 +135,6 @@ if 'exclusion_buttons_side' not in st.session_state:
 if go_button:
     st.session_state['exclusion_buttons_side'] = exclusion_buttons_side
 
-# Move the exclusions sidebar table slightly to the right
-c1, c2, c3 = st.sidebar.columns(3)
-
 # Make the true/false dict emojis
 torf = {True : "❌", False : "✅"}
 
@@ -145,8 +142,7 @@ display_df = st.session_state['exclusion_buttons_side']
 display_df[0] = display_df[0].map(torf)
 display_df = display_df.style.hide_columns()
 
-with c2:
-    st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
+st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
 
 
 
