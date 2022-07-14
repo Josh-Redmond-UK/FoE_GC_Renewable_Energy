@@ -207,7 +207,9 @@ if go_button:
     geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
     testframe = pd.read_csv("test_csv.csv")
 
-    testframe['sum']/1000 * 19
+    
+    testframe['Wind Energy Estimate (GW)'] = testframe['sum']/1000 * 19.8 / 1000
+    testframe['Solar Energy Estimate (GW)'] = testframe['sum']/1000 * 200 / 1000
 
     st.dataframe(testframe)
 
