@@ -54,8 +54,8 @@ ee.Initialize(credentials)
 #ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
 
 # Exclusion zones
-exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
-"Slope": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
+exclusions_dict = {"Wind Speed 💨": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
+"Slope 🗻": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
 "Transmission Lines":ee.FeatureCollection('projects/data-sunlight-311713/assets/transmission').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Roads": ee.FeatureCollection('projects/data-sunlight-311713/assets/UK_Roads_Buffer_200m').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Peatland": ee.FeatureCollection('projects/data-sunlight-311713/assets/merged_peatlands').reduceToImage(properties = ['Shape__Are'], reducer= ee.Reducer.first()).unmask().lt(1),
@@ -99,7 +99,7 @@ with st.form("Parameters"):
     with st.container():
         col1, col2 = st.columns(2)
         with col1:
-            mode = st.radio("Power Option", ["Solar", "Wind"])
+            mode = st.radio("Power Option", ["🌞 Solar", "💨 Wind"])
         with col2:
             area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
 
