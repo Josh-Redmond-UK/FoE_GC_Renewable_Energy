@@ -129,7 +129,6 @@ with st.form("Parameters"):
 if go_button:
     m = geemap.Map(center=[55.3, 0], zoom=6)
     uk_adm2 = ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC").filter(f"pcon19nm == '{area}'")
-    m.addLayer(uk_adm2, {}, f"{area}", True, 0.5)
     m.centerObject(uk_adm2)
     image_exclusion = []
 
@@ -149,6 +148,16 @@ if go_button:
     scale= 50, maxPixels=99999999999999999, bestEffort=True).get('area').getInfo()
 
     st.write("total output", pix_area/1000*19, "MW")
+
+    empty = ee.Image().byte()
+
+    outline = empty.paint({
+    "featureCollection": uk_adm2,
+    "color": 1,
+    "width": 3
+    })
+    m.addLayer(outline, {}, f"{area}", True, 0.5)
+
 
 
 
