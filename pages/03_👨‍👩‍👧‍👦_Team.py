@@ -7,7 +7,7 @@ st.markdown('''
 with st.container():
     c1, c2 = st.columns(2)
     with c1:
-        pass#st.image('josh-redmond-photo.jpg')
+        st.image('josh-redmond-photo.jpg')
     with c2:
         st.markdown('''Josh Redmond: *"I am a PhD student at Exeter University studying the use of satellite images as forensics in Human Rights Cases within a participatory design framework"*''')
 
