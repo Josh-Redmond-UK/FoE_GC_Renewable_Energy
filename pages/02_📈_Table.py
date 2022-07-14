@@ -47,8 +47,8 @@ st.dataframe(data = data.style.format({"Available wind area (sq.km)": "{:20,.0f}
 
 # Calculate total potential
 potentials = pd.DataFrame()
-potentials["Total wind energy potential (MW)"] = [data["Expected wind output (MW)"].sum()]
-potentials["Total solar energy potential (MW)"] = [data["Expected solar output (MW)"].sum()]
+potentials["Total wind energy potential (MW)"] = [data["Wind Energy Estimate (GW)"].sum()]
+potentials["Total solar energy potential (GW)"] = [data["Solar Energy Estimate (GW)"].sum()]
 
 # Output potentials dataframe
 style = potentials.style.hide_index().format({"Total wind energy potential (MW)": "{:20,.0f}",
