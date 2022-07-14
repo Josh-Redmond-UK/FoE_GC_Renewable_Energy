@@ -99,7 +99,7 @@ with st.form("Parameters"):
     with st.container():
         col1, col2 = st.columns(2)
         with col1:
-            mode = st.radio("Power Option", ["Solar", "Wind"])
+            mode = st.radio("Power Option", ["🌞 Solar", "💨 Wind"])
         with col2:
             area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
 
