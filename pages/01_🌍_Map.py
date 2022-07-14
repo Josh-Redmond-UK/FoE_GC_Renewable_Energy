@@ -162,7 +162,8 @@ if go_button:
     geometry= uk_adm2,
     scale= 10, maxPixels=99999999999999999, bestEffort=True).get('area').getInfo()
 
-    st.write("total output", pix_area/1000*19, "MW")
+   # st.write("total output", pix_area/1000*19, "MW")
+
 
 
 
