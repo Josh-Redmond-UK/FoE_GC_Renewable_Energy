@@ -18,10 +18,11 @@ from utils import *
 polys_list = load_csv_list("constituencies_names.csv")[1:]
 
 
-service_account = st.secrets['username']
-credentials = ee.from_service_account_info(st.secrets['gcp_service_account'])
-ee.Initialize(credentials)
+# service_account = st.secrets['username']
+# credentials = ee.from_service_account_info(st.secrets['gcp_service_account'])
+# ee.Initialize(credentials)
 
+ee.Initialize()
 
 # Intialize earth engine
 #ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])

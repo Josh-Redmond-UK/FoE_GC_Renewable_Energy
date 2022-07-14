@@ -1,0 +1,10 @@
+1. Write Homepage:
+    a. Description/motivation/explanation
+    b. Acknowledgements/citations
+    c. Links to github/GC website
+2. Table page:
+    a. Set up columns for wind/solar DONE
+    b. Put totals into (exportable?) table DONE
+    c. Put exclusions in sidebar (maybe for all tabs?)
+3. General:
+    a. Emoji-fy exclusions (at the end!) 
