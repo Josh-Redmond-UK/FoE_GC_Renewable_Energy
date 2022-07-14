@@ -203,6 +203,7 @@ if go_button:
 
     m.addLayer(windpower_adj, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
     m.add_colorbar(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
+    m.addLayerControl() 
     folium_static(m, width=800, height=700)
     geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
 
