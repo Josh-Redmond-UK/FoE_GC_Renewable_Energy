@@ -8,7 +8,7 @@ st.set_page_config(page_title = "Map output", layout="wide")
 from streamlit_folium import folium_static, st_folium
 import ee
 
-import geemap.eefolium as geemap
+import geemap as geemap
 
 
 from utils import *
