@@ -202,16 +202,17 @@ if go_button:
 
 
     m.addLayer(windpower_adj, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
-    m.add_colorbar_branca(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
+    m.add_colorbar(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
     folium_static(m, width=800, height=700)
     geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
 
 
-    download_map_button = st.button("Download Map")
+    # download_map_button = st.button("Download Map")
 
-    if download_map_button:
-        test = power.getDownloadURL()
-        st.write(test)
+    # if download_map_button:
+
+    #     test = power.getDownloadURL()
+    #     st.write(test)
 
 
 
