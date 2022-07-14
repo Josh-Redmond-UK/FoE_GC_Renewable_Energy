@@ -5,7 +5,7 @@ import json, tempfile
 # Set page config
 st.set_page_config(page_title = "Map output", layout="wide")
 
-from streamlit_folium import folium_static
+from streamlit_folium import folium_static, st_folium
 import ee
 
 import geemap.eefolium as geemap
@@ -128,56 +128,57 @@ with st.form("Parameters"):
 
 
 if go_button:
-    m = geemap.Map(center=[55.3, 0], zoom=6)
-    uk_adm2 = ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC").filter(f"pcon19nm == '{area}'")
-    m.centerObject(uk_adm2)
-    image_exclusion = []
+    with st.container():
+        m = geemap.Map(center=[55.3, 0], zoom=6)
+        uk_adm2 = ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC").filter(f"pcon19nm == '{area}'")
+        m.centerObject(uk_adm2)
+        image_exclusion = []
 
-    for x in exclusion_buttons.keys():
-       # st.write(x)
-       # st.write(exclusion_buttons[x])
-        if exclusion_buttons[x]:
-            image_exclusion.append(exclusions_dict[x])
-       #     st.write(exclusions_dict[x])
+        for x in exclusion_buttons.keys():
+        # st.write(x)
+        # st.write(exclusion_buttons[x])
+            if exclusion_buttons[x]:
+                image_exclusion.append(exclusions_dict[x])
+        #     st.write(exclusions_dict[x])
 
-    if mode == "Solar":
-        power = ee.Image('projects/data-sunlight-311713/assets/PV_Average')
-        minvis = 500
-        maxvis = 1000
-    else:
-        power = ee.Image('projects/data-sunlight-311713/assets/wind_power')
-        minvis = 1
-        maxvis = 1000
+        if mode == "Solar":
+            power = ee.Image('projects/data-sunlight-311713/assets/PV_Average')
+            minvis = 500
+            maxvis = 1000
+        else:
+            power = ee.Image('projects/data-sunlight-311713/assets/wind_power')
+            minvis = 1
+            maxvis = 1000
 
-    windpower_adj = compute_exclusions(image_exclusion, power).clip(uk_adm2)
-    windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
-    
-    pix_area = windpower_adj.pixelArea().reduceRegion(
-    reducer= ee.Reducer.sum(),
-    geometry= uk_adm2,
-    scale= 50, maxPixels=99999999999999999, bestEffort=True).get('area').getInfo()
+        windpower_adj = compute_exclusions(image_exclusion, power).clip(uk_adm2)
+        windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
+        
+        pix_area = windpower_adj.pixelArea().reduceRegion(
+        reducer= ee.Reducer.sum(),
+        geometry= uk_adm2,
+        scale= 50, maxPixels=99999999999999999, bestEffort=True).get('area').getInfo()
 
-   # st.write("total output", pix_area/1000*19, "MW")
+    # st.write("total output", pix_area/1000*19, "MW")
 
-    empty = ee.Image().byte()
+        empty = ee.Image().byte()
 
-    outline = empty.paint(
-    featureCollection= uk_adm2,
-    color= 1,
-    width= 3
-    )
-    m.addLayer(outline, {}, f"{area}", True, 0.5)
-
-
-
-
-    windpower_cand_zones = windpower_adj.gt(0).pixelArea()
+        outline = empty.paint(
+        featureCollection= uk_adm2,
+        color= 1,
+        width= 3
+        )
+        m.addLayer(outline, {}, f"{area}", True, 0.5)
 
 
-    m.addLayer(windpower_adj, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
-    m.add_colorbar_branca(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
-    folium_static(m, width=1400, height=700)
-    st.download_button("Download Map", "null", f"{area}-{mode}.txt")
+
+
+        windpower_cand_zones = windpower_adj.gt(0).pixelArea()
+
+
+        m.addLayer(windpower_adj, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
+        m.add_colorbar_branca(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
+        st_folium(m, width=1400, height=700)
+        st.download_button("Download Map", "null", f"{area}-{mode}.txt")
 
 
 
