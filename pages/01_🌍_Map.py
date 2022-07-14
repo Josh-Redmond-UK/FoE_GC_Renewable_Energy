@@ -205,13 +205,6 @@ if go_button:
     m.add_colorbar_branca(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
     folium_static(m, width=800, height=700)
     geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
-    testframe = pd.read_csv("test_csv.csv")
-
-    
-    testframe['Wind Energy Estimate (GW)'] = testframe['sum']/1000 * 19.8 / 1000
-    testframe['Solar Energy Estimate (GW)'] = testframe['sum']/1000 * 200 / 1000
-
-    st.dataframe(testframe)
 
 
     st.download_button("Download Map", "null", f"{area}-{mode}.txt")
