@@ -15,7 +15,22 @@ constituencies = constituencies.rename(columns = {"pcon19nm" : "Constituency"})
 
 # Random numbers for data
 data = pd.DataFrame(np.random.randint(7, 12000, size = (650, 4)), columns = ["Available wind area (sq.km)", "Expected wind output (MW)", "Available solar area (sq. km)", "Expected solar output (MW)"])
-data = data.set_index(constituencies["Constituency"])
+
+testframe = pd.read_csv("test_csv.csv")
+
+
+testframe['Wind Energy Estimate (GW)'] = testframe['sum']/1000 * 19.8 / 1000
+testframe['Solar Energy Estimate (GW)'] = testframe['sum']/1000 * 200 / 1000
+testframe['Total Area Available for Devleopment (Km/2)'] = testframe['sum']/1000 
+
+data = testframe[['Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)' 'pcon19nm']]
+
+
+#st.dataframe(testframe)
+
+
+data = data.set_index(data["pcon19nm"])
+data = data[['Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)']]
 data = data.rename_axis("Constituency")
 
 # Put session state (exclusions) in sidebar
