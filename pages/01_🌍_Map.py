@@ -207,8 +207,11 @@ if go_button:
     geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
 
 
-    st.download_button("Download Map", "null", f"{area}-{mode}.txt")
+    download_map_button = st.button("Download Map")
 
+    if download_map_button:
+        test = power.getDownloadURL()
+        st.write(test)
 
 
 

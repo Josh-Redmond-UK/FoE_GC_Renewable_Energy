@@ -14,7 +14,7 @@ constituencies = pd.read_csv("constituencies_names.csv")
 constituencies = constituencies.rename(columns = {"pcon19nm" : "Constituency"})
 
 # Random numbers for data
-data = pd.DataFrame(np.random.randint(7, 12000, size = (650, 4)), columns = ["Available wind area (sq.km)", "Expected wind output (MW)", "Available solar area (sq. km)", "Expected solar output (MW)"])
+#data = pd.DataFrame(np.random.randint(7, 12000, size = (650, 4)), columns = ["Available wind area (sq.km)", "Expected wind output (MW)", "Available solar area (sq. km)", "Expected solar output (MW)"])
 
 testframe = pd.read_csv("test_csv.csv")
 
