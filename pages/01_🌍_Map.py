@@ -206,7 +206,11 @@ if go_button:
     folium_static(m, width=800, height=700)
     geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
     testframe = pd.read_csv("test_csv.csv")
+
+    testframe['sum']/1000 * 19
+
     st.dataframe(testframe)
+
 
     st.download_button("Download Map", "null", f"{area}-{mode}.txt")
 
