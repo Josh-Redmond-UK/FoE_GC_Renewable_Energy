@@ -151,11 +151,11 @@ if go_button:
 
     empty = ee.Image().byte()
 
-    outline = empty.paint({
-    "featureCollection": uk_adm2,
-    "color": 1,
-    "width": 3
-    })
+    outline = empty.paint(
+    featureCollection= uk_adm2,
+    color= 1,
+    width= 3
+    )
     m.addLayer(outline, {}, f"{area}", True, 0.5)
 
 
