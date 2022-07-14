@@ -167,7 +167,7 @@ if go_button:
 
 
     windpower_cand_zones = windpower_adj.gt(0).pixelArea()
-    m.addLayer(windpower_adj, {"min":1, "max":1000})
+    m.addLayer(windpower_adj_mask, {"min":1, "max":1000})
 
     folium_static(m, width=1400, height=700)
     st.download_button("Download Map", "null", f"{area}-{mode}.txt")
