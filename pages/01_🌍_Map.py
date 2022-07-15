@@ -184,6 +184,7 @@ if go_button:
         minvis = 1
         maxvis = 1000
 
+    global windpower_adj
     windpower_adj = compute_exclusions(image_exclusion, power).clip(uk_adm2)
     windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
 
