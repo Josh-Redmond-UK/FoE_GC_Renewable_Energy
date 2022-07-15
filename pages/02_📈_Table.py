@@ -35,6 +35,16 @@ if generate_table_button:
       testframe['Total Area Available for Devleopment (Km/2)'] = testframe['sum']/1000 
 
       data = testframe[['Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)', 'pcon19nm']]
+   # Put session state (exclusions) in sidebar
+      display_df = st.session_state['exclusion_buttons_side']
+      display_df = display_df.style.hide_columns()
+      st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
+
+      # Output dataframe
+      st.dataframe(data = data.style.format({"Available wind area (sq.km)": "{:20,.0f}", 
+                              "Expected wind output (MW)": "{:20,.0f}", 
+                              "Available solar area (sq. km)": "{:20,.0f}",
+                              "Expected solar output (MW)":"{:20,.0f}"}), width = 1500, height = 750)
 
 
       #st.dataframe(testframe)
