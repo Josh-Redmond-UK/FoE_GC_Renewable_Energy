@@ -18,7 +18,11 @@ def area_change_callback(name, features, map):
     
 
 def load_csv_list(path):
-    return  list(pd.read_csv(path)['pcon19nm'])
+    try:
+        return  list(pd.read_csv(path)['pcon19nm'])
+    except:
+        return  list(pd.read_csv(path)['LAD21NM'])
+
 
 def get_build_up_area_buffer(distance=200):
     landcover = ee.ImageCollection("ESA/WorldCover/v100").first()
