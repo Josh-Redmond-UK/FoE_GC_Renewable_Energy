@@ -218,6 +218,10 @@ if go_button:
     m.add_colorbar(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
 
     m.addLayerControl() 
+    if mode == '🌞 Solar':
+        st.write("KWH per KM/2")
+    else:
+        st.write("Power Units in W/M2")
     folium_static(m, width=800, height=700)
 
     try:
