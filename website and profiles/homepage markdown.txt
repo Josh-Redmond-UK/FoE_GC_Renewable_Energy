@@ -2,7 +2,7 @@
 
 This project was carried out as part of the 2022 Environmental Intelligence Grand Challenge Hackathon, which took place at the University of Exeter between 11-15th July, hosted by the [EICDT](https://www.exeter.ac.uk/research/eicdt/).
 
-Our challenge description from [Friends of the Earth](https://friendsoftheearth.uk/) was:
+Our challenge description from our friends at [Friends of the Earth](https://friendsoftheearth.uk/) was:
 *"Renewable energy is essential for decarbonisation and climate mitigation, but it is very difficult to find suitable land to build new wind and solar facilities. Energy demand must be balanced against food and conservation needs, taking into account prevailing weather and the preferences of the local community – all in an uncertain future environment. This challenge will combine data from diverse sources (climate, land use, planning, social) to determine the most suitable locations for renewable energy and help local authorities make effective decisions."*
 
 More information about our datasets used can be found [here](https://docs.google.com/document/d/1gQbY1mPs2MjZjMS0_X15yEfpNTeCOegEoz4wCTuOxZ8/edit?usp=sharing).
