@@ -65,7 +65,7 @@ def lizzy():
         with c1:
             pass
         with c2:
-            st.markdown('''Elizabeth Galloway: ''')
+            st.markdown('''Elizabeth Galloway: I am a PhD student in the Environmental Intelligence CDT at the University of Exeter, working on predicting the impacts of tropical cyclones.''')
 
 team = [josh, arthur, danielle, alice, matthew, rodrigo, lizzy, ellie]
 
