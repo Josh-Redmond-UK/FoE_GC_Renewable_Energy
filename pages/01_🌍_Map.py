@@ -219,9 +219,9 @@ if go_button:
 
     m.addLayerControl() 
     if mode == '🌞 Solar':
-        st.write("KWH per KM/2")
+        st.write("Map Power Units in KWH per KM/2")
     else:
-        st.write("Power Units in W/M2")
+        st.write("Map Power Units in W/M2")
     folium_static(m, width=800, height=700)
 
     try:
