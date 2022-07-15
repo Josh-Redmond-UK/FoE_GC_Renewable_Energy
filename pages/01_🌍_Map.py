@@ -180,7 +180,7 @@ if go_button:
     if mode == "🌞 Solar":
         power = ee.Image('projects/data-sunlight-311713/assets/PV_Average')
         minvis = 500
-        maxvis = 1000
+        maxvis = 1500
     else:
         power = ee.Image('projects/data-sunlight-311713/assets/wind_power')
         minvis = 1
