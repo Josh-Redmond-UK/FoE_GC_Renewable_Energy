@@ -153,6 +153,7 @@ display_df = display_df.style.hide_columns()
 
 st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
 
+global windpower_adj
 
 
 #st.sidebar.dataframe(display_df)
@@ -184,7 +185,6 @@ if go_button:
         minvis = 1
         maxvis = 1000
 
-    global windpower_adj
     windpower_adj = compute_exclusions(image_exclusion, power).clip(uk_adm2)
     windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
 
