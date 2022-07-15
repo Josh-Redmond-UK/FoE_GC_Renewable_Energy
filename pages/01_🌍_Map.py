@@ -70,7 +70,11 @@ exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/
 "Cultural Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/england_culturalsites').reduceToImage(properties = ['ListEntry'], reducer = ee.Reducer.first()).unmask().lt(1),
 "Parks and Green Space": ee.FeatureCollection("projects/data-sunlight-311713/assets/GreenspaceEngArea").reduceToImage(properties= ['areaHa'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Functional Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/Functional_sites').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Built Up Areas": get_build_up_area_buffer(500).unmask().lt(1)}
+"Built Up Areas": get_build_up_area_buffer(500).unmask().lt(1),
+"Existing Solar PV": ee.FeatureCollection('projects/data-sunlight-311713/assets/solar_pv').reduceToImage(properties= ['FID'], reducer = ee.Reducer.first()).unmask().lt(1),
+"Existing Other Renewable":ee.FeatureCollection('projects/data-sunlight-311713/assets/other_renewables').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Existing Onshore Wind": ee.FeatureCollection('projects/data-sunlight-311713/assets/onshore_wind').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1)
+}
 
 test_exclusions = list(exclusions_dict.keys())
 
@@ -207,8 +211,6 @@ if go_button:
         os.remove("test_csv.csv")
     except:
         pass
-
-    geemap.zonal_statistics(windpower_adj.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
 
 
     download_map_button = st.button("Download Map")
