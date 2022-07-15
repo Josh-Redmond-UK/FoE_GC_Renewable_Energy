@@ -177,7 +177,7 @@ if go_button:
             image_exclusion.append(exclusions_dict[x])
     #     st.write(exclusions_dict[x])
 
-    if mode == "Solar":
+    if mode == "🌞 Solar":
         power = ee.Image('projects/data-sunlight-311713/assets/PV_Average')
         minvis = 500
         maxvis = 1000
