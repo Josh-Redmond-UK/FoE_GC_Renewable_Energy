@@ -18,7 +18,7 @@ from utils import *
 
 # Load in datasets (that aren't in GEE)
 polys_list = load_csv_list("constituencies_names.csv")[1:]
-lad_list = load_csv_list("local_authorities_names.csv")[1:]
+lad_list = load_csv_list("local_authorities_name.csv")[1:]
 
 
 
