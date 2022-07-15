@@ -186,8 +186,8 @@ if go_button:
         minvis = 1
         maxvis = 1000
 
-    windpower_adj = compute_exclusions(image_exclusion, power).clip(uk_adm2)
-    windpower_adj = windpower_adj.updateMask(windpower_adj.gt(0))
+    power = compute_exclusions(image_exclusion, power).clip(uk_adm2)
+    power = power.updateMask(power.gt(0))
 
 
     empty = ee.Image().byte()
@@ -202,10 +202,7 @@ if go_button:
 
 
 
-    windpower_cand_zones = windpower_adj.gt(0).pixelArea()
-
-
-    m.addLayer(windpower_adj, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
+    m.addLayer(power, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
     m.add_colorbar(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
 
     m.addLayerControl() 
