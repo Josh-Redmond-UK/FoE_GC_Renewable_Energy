@@ -32,7 +32,7 @@ with c2:
 # st.sidebar.image("https://upload.wikimedia.org/wikipedia/en/thumb/b/b9/Friends_of_the_Earth_%28logo%29.svg/1200px-Friends_of_the_Earth_%28logo%29.svg.png", width = 150)
 # st.sidebar.image("https://www.studiosity.com/hubfs/Exeter%20colour_logo.png", width = 150)
 
-with open("website and profiles\homepage markdown.txt") as f:
+with open("website and profiles/homepage markdown.txt") as f:
     md_body = f.readlines()
 md_body = " ".join(md_body)
 

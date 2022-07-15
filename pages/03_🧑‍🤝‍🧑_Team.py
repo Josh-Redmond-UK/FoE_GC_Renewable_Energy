@@ -63,7 +63,7 @@ def lizzy():
     with st.container():
         c1, c2 = st.columns(2)
         with c1:
-            st.image('website and profiles\Elizabeth_Galloway.jpg')
+            st.image('website and profiles/Elizabeth_Galloway.jpg')
         with c2:
             st.markdown('''Elizabeth Galloway: *"I am a PhD student in the Environmental Intelligence CDT at the University of Exeter, working on predicting the impacts of tropical cyclones."* ''')
 
