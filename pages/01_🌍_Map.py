@@ -73,7 +73,9 @@ exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/
 "Built Up Areas": get_build_up_area_buffer(100).unmask().lt(1),
 "Existing Solar PV": ee.FeatureCollection('projects/data-sunlight-311713/assets/solar_pv').reduceToImage(properties= ['FID'], reducer = ee.Reducer.first()).unmask().lt(1),
 "Existing Other Renewable":ee.FeatureCollection('projects/data-sunlight-311713/assets/other_renewables').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Existing Onshore Wind": ee.FeatureCollection('projects/data-sunlight-311713/assets/onshore_wind').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1)
+"Existing Onshore Wind": ee.FeatureCollection('projects/data-sunlight-311713/assets/onshore_wind').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Flood Risk Zone 2": ee.FeatureCollection('users/Josh_Redmond/EA_FloodMapForPlanningRiversAndSeaFloodZone2_SHP_Full').reduceToImage(properties= ['st_area_sh'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Flood Risk Zone 3": ee.FeatureCollection('users/Josh_Redmond/EA_FloodMapForPlanningRiversAndSeaFloodZone3_SHP_Full').reduceToImage(properties= ['st_area_sh'], reducer= ee.Reducer.first()).unmask().lt(1)
 }
 
 test_exclusions = list(exclusions_dict.keys())
