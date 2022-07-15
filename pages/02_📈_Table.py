@@ -42,7 +42,7 @@ try:
    st.dataframe(data = data.style.format({"Available wind area (sq.km)": "{:20,.0f}", 
                            "Expected wind output (MW)": "{:20,.0f}", 
                            "Available solar area (sq. km)": "{:20,.0f}",
-                           "Expected solar output (MW)":"{:20,.0f}"}), width = 1000, height = 750)
+                           "Expected solar output (MW)":"{:20,.0f}"}), width = 1500, height = 750)
 
 
    # Calculate total potential
