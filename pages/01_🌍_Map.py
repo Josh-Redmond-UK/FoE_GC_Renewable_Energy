@@ -216,8 +216,9 @@ if go_button:
 
 
     generate_table_button = st.button("Generate Table")
-    st.spinner(text="Generating statistics and table")
+    if generate_table_button:
+        st.spinner(text="Generating statistics and table")
 
-    geemap.zonal_statistics(windpower_adj.gt(0).multiply(ee.Image.constant(30)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=30)
+        geemap.zonal_statistics(windpower_adj.gt(0).multiply(ee.Image.constant(30)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=30)
 
 
