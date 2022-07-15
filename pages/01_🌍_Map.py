@@ -18,7 +18,7 @@ from utils import *
 
 # Load in datasets (that aren't in GEE)
 polys_list = load_csv_list("constituencies_names.csv")[1:]
-
+lad_list = load_csv_list("local_authorities_names.csv")[1:]
 
 
 
@@ -104,6 +104,10 @@ solar_exclusions = ["Solar Insolation",
 # Streamlit formatting
 #st.title("UK Renewables Map", anchor=None)
 
+geometry_mode = st.selectbox("Local Area Type", ['Constituencies', 'Local Authorities'])
+
+
+
 with st.form("Parameters"):
     st.header("Map Options")
     with st.container():
@@ -111,7 +115,10 @@ with st.form("Parameters"):
         with col1:
             mode = st.radio("Power Option", ["🌞 Solar", "💨 Wind"])
         with col2:
-            area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
+            if geometry_mode == "Constituencies":
+                area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
+            else:
+                area =st.selectbox("Area", lad_list)
 
         st.header("Toggle Exclusion Criteria")
         radio_button = st.radio("Scenarios", ["Maximum Exclusions", "Allow on Peatland", "Custom"])
@@ -165,8 +172,13 @@ st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
 if go_button:
 
     m = geemap.Map(center=[55.3, 0], zoom=6)
-    uk_adm2_all = ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC")#.filter(f"pcon19nm == '{area}'")
-    uk_adm2 = uk_adm2_all.filter(f"pcon19nm == '{area}'")
+    if geometry_mode == "Constituencies":
+        uk_adm2_all = ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC")#.filter(f"pcon19nm == '{area}'")
+        uk_adm2 = uk_adm2_all.filter(f"pcon19nm == '{area}'")
+    else:
+        uk_adm2_all = ee.FeatureCollection("projects/data-sunlight-311713/assets/local_authorities_UK")#.filter(f"pcon19nm == '{area}'")
+        uk_adm2 = uk_adm2_all.filter(f"LAD21NM == '{area}'")
+
     m.centerObject(uk_adm2)
     image_exclusion = []
 
