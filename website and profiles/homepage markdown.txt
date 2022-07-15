@@ -7,3 +7,17 @@ Our challenge description from our friends at [Friends of the Earth](https://fri
 
 More information about our datasets used can be found [here](https://docs.google.com/document/d/1gQbY1mPs2MjZjMS0_X15yEfpNTeCOegEoz4wCTuOxZ8/edit?usp=sharing).
 Our GitHub repository can be found [here](https://github.com/Josh-Redmond-UK/FoE_GC_Renewable_Energy).
+
+### Data Sources and Copyrights: All data compiled between 11-14th July 2022.
+
+- Google Earth Engine - underlying maps and slope gradients
+- Contains Ordnance Survey data © Crown copyright and database right 2022
+- Contains National Air Traffic Services data
+- Sustrans National Cycle Network data is licensed under the Open Government Licence
+- Natural England Open Data Geoportal and DEFRA Spatial Data Download (© Crown Copyright 2019)
+- Scotland’s Nature Agency - Contains NatureScot information licensed under the Open Government Licence v3.0
+- Contains Natural Resources Wales information © Natural Resources Wales and Database Right. All rights Reserved. Contains Ordnance Survey Data. Ordnance Survey Licence number 100019741. Crown Copyright and Database Right.
+- Contains public sector data from © JNCC/NE/NRW/SNH/DOENI 2019. Contains OS data © Crown Copyright and database right 2019.
+- © Historic England 2022. Contains Ordnance Survey data © Crown copyright and database right 2022. The Historic England GIS Data contained in this material was obtained on 13/07/2022. The most publicly available up to date Historic England GIS Data can be obtained from HistoricEngland.org.uk.
+- Windspeed data obtained from the “Global Wind Atlas 3.0, a free, web-based application developed, owned and operated by the Technical University of Denmark (DTU). The Global Wind Atlas 3.0 is released in partnership with the World Bank Group, utilizing data provided by Vortex, using funding provided by the Energy Sector Management Assistance Program (ESMAP). For additional information: https://globalwindatlas.info”
+- Existing renewable energy infrastructure: https://www.gov.uk/government/publications/renewable-energy-planning-database-monthly-extract
