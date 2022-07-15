@@ -208,7 +208,7 @@ if go_button:
     except:
         pass
 
-    geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
+    geemap.zonal_statistics(windpower_adj.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
 
 
     download_map_button = st.button("Download Map")
