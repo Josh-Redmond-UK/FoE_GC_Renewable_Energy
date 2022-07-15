@@ -70,7 +70,11 @@ exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/
 "Cultural Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/england_culturalsites').reduceToImage(properties = ['ListEntry'], reducer = ee.Reducer.first()).unmask().lt(1),
 "Parks and Green Space": ee.FeatureCollection("projects/data-sunlight-311713/assets/GreenspaceEngArea").reduceToImage(properties= ['areaHa'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Functional Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/Functional_sites').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Built Up Areas": get_build_up_area_buffer(500).unmask().lt(1)}
+"Built Up Areas": get_build_up_area_buffer(500).unmask().lt(1),
+"Existing Solar PV": ee.FeatureCollection('projects/data-sunlight-311713/assets/solar_pv').reduceToImage(properties= ['FID'], reducer = ee.Reducer.first()).unmask().lt(1),
+"Existing Other Renewable":ee.FeatureCollection('projects/data-sunlight-311713/assets/other_renewables').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
+"Existing Onshore Wind": ee.FeatureCollection('projects/data-sunlight-311713/assets/onshore_wind').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1)
+}
 
 test_exclusions = list(exclusions_dict.keys())
 
@@ -149,6 +153,7 @@ display_df = display_df.style.hide_columns()
 
 st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
 
+global windpower_adj
 
 
 #st.sidebar.dataframe(display_df)
@@ -208,15 +213,101 @@ if go_button:
     except:
         pass
 
-    geemap.zonal_statistics(windpower_adj.gt(0).multiply(ee.Image.constant(100)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=100)
 
 
-    download_map_button = st.button("Download Map")
+    generate_table_button = st.button("Generate Table")
 
-    if download_map_button:
+    if generate_table_button:
+        st.spinner(text="Generating statistics and table")
 
-         test = power.getDownloadURL()
-         st.write(test)
+        geemap.zonal_statistics(windpower_adj.gt(0).multiply(ee.Image.constant(30)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=30)
+
+
+
+
+        try:
+            # Page title
+            #st.title("UK Renewables Table")
+
+            # Read in county names
+            constituencies = pd.read_csv("constituencies_names.csv")
+            constituencies = constituencies.rename(columns = {"pcon19nm" : "Constituency"})
+
+            # Random numbers for data
+            #data = pd.DataFrame(np.random.randint(7, 12000, size = (650, 4)), columns = ["Available wind area (sq.km)", "Expected wind output (MW)", "Available solar area (sq. km)", "Expected solar output (MW)"])
+
+            testframe = pd.read_csv("test_csv.csv")
+
+
+            testframe['Wind Energy Estimate (GW)'] = testframe['sum']/1000 * 19.8 / 1000
+            testframe['Solar Energy Estimate (GW)'] = testframe['sum']/1000 * 200 / 1000
+            testframe['Total Area Available for Devleopment (Km/2)'] = testframe['sum']/1000 
+
+            data = testframe[['Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)', 'pcon19nm']]
+        # Put session state (exclusions) in sidebar
+            display_df = st.session_state['exclusion_buttons_side']
+            display_df = display_df.style.hide_columns()
+            st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
+
+            # Output dataframe
+            st.dataframe(data = data.style.format({"Available wind area (sq.km)": "{:20,.0f}", 
+                                    "Expected wind output (MW)": "{:20,.0f}", 
+                                    "Available solar area (sq. km)": "{:20,.0f}",
+                                    "Expected solar output (MW)":"{:20,.0f}"}), width = 1500, height = 750)
+
+
+            #st.dataframe(testframe)
+
+
+            data = data.set_index(data["pcon19nm"])
+            data = data[['Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)']]
+            data = data.rename_axis("Constituency")
+
+            # Put session state (exclusions) in sidebar
+            display_df = st.session_state['exclusion_buttons_side']
+            display_df = display_df.style.hide_columns()
+            st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
+
+            # Output dataframe
+            st.dataframe(data = data.style.format({"Available wind area (sq.km)": "{:20,.0f}", 
+                                    "Expected wind output (MW)": "{:20,.0f}", 
+                                    "Available solar area (sq. km)": "{:20,.0f}",
+                                    "Expected solar output (MW)":"{:20,.0f}"}), width = 1000, height = 750)
+
+
+            # Calculate total potential
+            potentials = pd.DataFrame()
+            potentials["Total wind energy potential (GW)"] = [data["Wind Energy Estimate (GW)"].sum()]
+            potentials["Total solar energy potential (GW)"] = [data["Solar Energy Estimate (GW)"].sum()]
+
+            # Output potentials dataframe
+            style = potentials.style.hide_index().format({"Total wind energy potential (GW)": "{:20,.0f}",
+                                                        "Total solar energy potential (GW)": "{:20,.0f}"})
+            st.write(style.to_html(), unsafe_allow_html=True)
+
+            # some whitespace to separate table from button
+            st.text("")
+
+            # Convert dataframe to csv, download button
+            @st.cache
+            def convert_df(df):
+                return df.to_csv().encode('utf-8')
+
+            csv1 = convert_df(data)
+            csv2 = convert_df(potentials)
+
+            c1, c2 = st.columns(2)
+
+            with c1:
+                st.download_button(
+                "Download .csv",
+                csv1,
+                "EIGC22_tableoutput.csv",
+                "text/csv",
+                key='download-csv1'
+            )
+        except:
+            pass
 
 
 
