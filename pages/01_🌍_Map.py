@@ -205,17 +205,12 @@ if go_button:
 
     m.addLayer(windpower_adj, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
     m.add_colorbar(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
+
     m.addLayerControl() 
     folium_static(m, width=800, height=700)
+
     try:
         os.remove("test_csv.csv")
     except:
         pass
-
-
-
-    st.spinner(text="Generating statistics and table")
-
-    geemap.zonal_statistics(windpower_adj.gt(0).multiply(ee.Image.constant(30)), uk_adm2_all, "test_csv.csv", statistics_type='SUM', scale=30)
-
 
