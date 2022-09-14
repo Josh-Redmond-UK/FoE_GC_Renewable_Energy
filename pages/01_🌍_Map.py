@@ -23,7 +23,7 @@ lad_list = load_csv_list("local_authorities_name.csv")[1:]
 
 
 # service_account = st.secrets['service_account']
-
+junkstring = '''
 data = {}
 data['type'] = st.secrets['other_keys']['type']
 data['project_id'] = st.secrets['other_keys']['project_id']
@@ -46,11 +46,11 @@ tfile = tempfile.NamedTemporaryFile(mode="w+")
 json.dump(data, tfile)
 tfile.flush()
 credentials = ee.ServiceAccountCredentials(service_account, tfile.name)
-ee.Initialize(credentials)
+ee.Initialize(credentials)'''
 
 
 #credentials = service_account.Credentials.from_service_account_info(st.secrets['username'], st.secrets["gcp_service_account"])
-#ee.Initialize()
+ee.Initialize()
 
 # Intialize earth engine
 #ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
