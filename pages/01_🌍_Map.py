@@ -58,6 +58,7 @@ ee.Initialize()
 # Exclusion zones
 exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
 "Slope": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
+"Slope > 10": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(10),
 "Transmission Lines":ee.FeatureCollection('projects/data-sunlight-311713/assets/transmission').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Roads": ee.FeatureCollection('projects/data-sunlight-311713/assets/UK_Roads_Buffer_200m').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
 "Peatland": ee.FeatureCollection('projects/data-sunlight-311713/assets/merged_peatlands').reduceToImage(properties = ['Shape__Are'], reducer= ee.Reducer.first()).unmask().lt(1),
@@ -85,13 +86,13 @@ wind_exclusions = ["Wind Speed",
 "Aircraft Flightpath",
 "Noise",
 "Built Up Areas",
-"Slope"]
+"Slope",
+"Existing Renewable Projects"]
 
 common_exclusions = ["Roads",
 "Railway",
 "Public Rights of Way",
 "Heritage Sites",
-"Existing Renewable Projects",
 "Peatland",
 "Protected Areas",
 "Areas of Natural Beauty"]
@@ -107,13 +108,13 @@ solar_exclusions = ["Solar Insolation",
 geometry_mode = st.selectbox("Local Area Type", ['Constituencies', 'Local Authorities'])
 
 
+mode = st.radio("Power Option", ["🌞 Solar", "💨 Wind"])
 
 with st.form("Parameters"):
     st.header("Map Options")
     with st.container():
         col1, col2 = st.columns(2)
-        with col1:
-            mode = st.radio("Power Option", ["🌞 Solar", "💨 Wind"])
+        #with col1:
         with col2:
             if geometry_mode == "Constituencies":
                 area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
@@ -126,9 +127,10 @@ with st.form("Parameters"):
         with st.expander("Options"):
             exclusion_buttons = {}
             if mode == "Wind":
-                exclusion_options = test_exclusions
+                exclusion_options = common_exclusions+wind_exclusions
+
             else:
-                exclusion_options = test_exclusions#common_exclusions+solar_exclusions
+                exclusion_options = common_exclusions+solar_exclusions
 
             for ex in exclusion_options:
                 #st.write(ex)
