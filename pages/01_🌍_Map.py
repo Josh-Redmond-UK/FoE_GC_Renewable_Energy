@@ -92,8 +92,8 @@ wind_exclusions = ["Wind Speed",
 
 common_exclusions = ["Roads",
 "Railway",
-"Public Rights of Way",
-"Heritage Sites",
+#"Public Rights of Way",
+#"Heritage Sites",
 "Peatland",
 "Protected Areas",
 "Areas of Natural Beauty",
@@ -105,10 +105,7 @@ common_exclusions = ["Roads",
 "Functional Sites",
 ]
 
-solar_exclusions = ["Solar Insolation",
-"Agricultural Land",
-"Aspect",
-"Slope > 10",
+solar_exclusions = ["Slope > 10",
 "Existing Solar PV"]
 
 # Streamlit formatting
@@ -122,24 +119,30 @@ mode = st.radio("Power Option", ["🌞 Solar", "💨 Wind"])
 with st.form("Parameters"):
     st.header("Map Options")
     with st.container():
-        col1, col2 = st.columns(2)
+       # col1, col2 = st.columns(2)
         #with col1:
-        with col2:
-            if geometry_mode == "Constituencies":
-                area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
-            else:
-                area =st.selectbox("Area", lad_list)
+       # with col2:
+        if geometry_mode == "Constituencies":
+            area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
+        else:
+            area =st.selectbox("Area", lad_list)
 
         st.header("Toggle Exclusion Criteria")
         radio_button = st.radio("Scenarios", ["Maximum Exclusions", "Allow on Peatland", "Custom"])
         #   if radio_button == "Custom":
         with st.expander("Options"):
             exclusion_buttons = {}
-            if mode == "Wind":
-                exclusion_options = common_exclusions+wind_exclusions
-
+            if mode == "💨 Wind":
+                key_list = common_exclusions+wind_exclusions
+                #test_exclusions = list({exclusions_dict[k] for k in key_list}.keys())
+                test_exclusions = key_list
+                exclusion_options = test_exclusions
             else:
-                exclusion_options = common_exclusions+solar_exclusions
+                key_list = common_exclusions+solar_exclusions
+                test_exclusions = key_list
+
+             #   test_exclusions = list({exclusions_dict[k] for k in key_list}.keys())
+                exclusion_options = test_exclusions
 
             for ex in exclusion_options:
                 #st.write(ex)
