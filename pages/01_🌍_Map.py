@@ -87,7 +87,8 @@ wind_exclusions = ["Wind Speed",
 "Noise",
 "Built Up Areas",
 "Slope",
-"Existing Renewable Projects"]
+"Existing Onshore Wind",
+"Existing Other Renewable"]
 
 common_exclusions = ["Roads",
 "Railway",
@@ -95,12 +96,20 @@ common_exclusions = ["Roads",
 "Heritage Sites",
 "Peatland",
 "Protected Areas",
-"Areas of Natural Beauty"]
+"Areas of Natural Beauty",
+"Woodlands",
+"Cycle Paths",
+"Surface Water",
+"Cultural Sites",
+"Parks and Green Space",
+"Functional Sites",
+]
 
 solar_exclusions = ["Solar Insolation",
 "Agricultural Land",
 "Aspect",
-"Slope > 10"]
+"Slope > 10",
+"Existing Solar PV"]
 
 # Streamlit formatting
 #st.title("UK Renewables Map", anchor=None)
