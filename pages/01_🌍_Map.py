@@ -113,7 +113,6 @@ solar_exclusions = ["Slope > 10",
 
 geometry_mode = st.selectbox("Local Area Type", ['Constituencies', 'Local Authorities'])
 
-
 mode = st.radio("Power Option", ["🌞 Solar", "💨 Wind"])
 
 with st.form("Parameters"):
@@ -123,9 +122,12 @@ with st.form("Parameters"):
         #with col1:
        # with col2:
         if geometry_mode == "Constituencies":
+  
             area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
+            
         else:
             area =st.selectbox("Area", lad_list)
+        st.session_state['geometry'] = area
 
         st.header("Toggle Exclusion Criteria")
         radio_button = st.radio("Scenarios", ["Maximum Exclusions", "Allow on Peatland", "Custom"])
@@ -160,21 +162,21 @@ with st.form("Parameters"):
         go_button = st.form_submit_button("Draw Map")
 
 # Save exclusions buttons output in session state to display between pages
-exclusion_buttons_side = pd.DataFrame.from_dict(exclusion_buttons, orient = "index")
+#exclusion_buttons_side = pd.DataFrame.from_dict(exclusion_buttons, orient = "index")
 
-if 'exclusion_buttons_side' not in st.session_state:
-    st.session_state['exclusion_buttons_side'] = exclusion_buttons_side
-if go_button:
-    st.session_state['exclusion_buttons_side'] = exclusion_buttons_side
+#if 'exclusion_buttons_side' not in st.session_state:
+#    st.session_state['exclusion_buttons_side'] = exclusion_buttons_side
+#if go_button:
+#    st.session_state['exclusion_buttons_side'] = exclusion_buttons_side
 
 # Make the true/false dict emojis
-torf = {True : "❌", False : "✅"}
+#torf = {True : "❌", False : "✅"}
 
-display_df = st.session_state['exclusion_buttons_side']
-display_df[0] = display_df[0].map(torf)
-display_df = display_df.style.hide_columns()
+#display_df = st.session_state['exclusion_buttons_side']
+#display_df[0] = display_df[0].map(torf)
+#display_df = display_df.style.hide_columns()
 
-st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
+#st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
 
 
 
@@ -212,9 +214,12 @@ if go_button:
         minvis = 1
         maxvis = 1000
 
-    power = compute_exclusions(image_exclusion, power).clip(uk_adm2)
+    power = compute_exclusions(image_exclusion, power)
     power = power.updateMask(power.gt(0))
 
+    st.session_state['power'] = power
+    power = power.clip(uk_adm2)
+    st.session_state['bounds'] = uk_adm2#_all
 
     empty = ee.Image().byte()
 
@@ -238,8 +243,56 @@ if go_button:
         st.write("Map Power Units in W/M2")
     folium_static(m, width=800, height=700)
 
+
+
     try:
         os.remove("test_csv.csv")
     except:
         pass
+
+
+    #power = st.session_state['power']
+    geom_mode = st.session_state['geometry']
+
+    geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(30)), st.session_state['bounds'] , "test_csv.csv", statistics_type='SUM', scale=30)
+
+
+
+
+    # try:
+    # Page title
+    #st.title("UK Renewables Table")
+
+    # Read in county names
+    constituencies = pd.read_csv("test_csv.csv")
+    #st.write(print(constituencies))
+    constituencies['Wind Energy Estimate (GW)'] = constituencies['sum']/1000 * 19.8 / 1000
+    constituencies['Solar Energy Estimate (GW)'] = constituencies['sum']/1000 * 200 / 1000
+    constituencies['Total Area Available for Devleopment (Km/2)'] = constituencies['sum']/1000 
+
+    try:
+        constituencies = constituencies.rename(columns = {"pcon19nm" : "Constituency"})
+        #constituencies.set_index(constituencies['Constituency'])
+        constituencies = constituencies[['Constituency', 'Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)']]
+
+    except:
+        constituencies = constituencies.rename(columns = {"LAD21NM" : "Local Authority"})
+        #constituencies.set_index(constituencies['Local Authority'])
+        constituencies = constituencies[['Local Authority', 'Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)']]
+
+
+
+    # constituencies = constituencies["sum"]
+    st.dataframe(constituencies)
+    @st.cache
+    def convert_df(df):
+        return df.to_csv().encode('utf-8')
+
+    csvDownload = convert_df(constituencies)
+    st.download_button(
+    "Download .csv",
+    csvDownload,
+    "Renewable Energy Potential.csv",
+    "text/csv",
+    key='download-csv1'   )
 
