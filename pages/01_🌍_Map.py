@@ -4,6 +4,7 @@ from google.oauth2 import service_account
 import json, tempfile
 import pandas as pd
 import os
+import multiprocessing
 # Set page config
 st.set_page_config(page_title = "Map output", layout="wide")
 
@@ -48,9 +49,9 @@ tfile.flush()
 credentials = ee.ServiceAccountCredentials(service_account, tfile.name)
 ee.Initialize(credentials)'''
 
-
 #credentials = service_account.Credentials.from_service_account_info(st.secrets['username'], st.secrets["gcp_service_account"])
-ee.Initialize()
+ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
+
 
 # Intialize earth engine
 #ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
@@ -218,6 +219,7 @@ if go_button:
     power = power.updateMask(power.gt(0))
 
     st.session_state['power'] = power
+    wholeUkPower = power
     power = power.clip(uk_adm2)
     st.session_state['bounds'] = uk_adm2#_all
 
@@ -244,7 +246,6 @@ if go_button:
     folium_static(m, width=800, height=700)
 
 
-
     try:
         os.remove("test_csv.csv")
     except:
@@ -254,45 +255,24 @@ if go_button:
     #power = st.session_state['power']
     geom_mode = st.session_state['geometry']
 
-    geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(30)), st.session_state['bounds'] , "test_csv.csv", statistics_type='SUM', scale=30)
+    requests = computePowerAreaRequests(uk_adm2_all, wholeUkPower)
+    requests = requests.values.tolist()
 
+    names = []
+    areas = []
+    for args in requests:
+        geom, name, raster = args
+        area = usableAreaPerGeom(geom, name, raster)
+        names.append(name)
+        areas.append(area)
 
+    frame = pd.DataFrame([names, areas], index=["Name", "Total Area for Development (KM^2)"]).T
+    frame['Total Area for Development (KM^2)']/=1000
+    frame['Solar Power Potential (GW)'] = frame['Total Area for Development (KM^2)'] * 200 / 1000
+    frame['Wind Power Potential (GW)'] = frame['Total Area for Development (KM^2)'] * 19.8 / 1000
+    st.dataframe(frame)
+    encoded = frame.to_csv().encode('utf-8') 
+    st.download_button(label="Download CSV", data = encoded, file_name="Uk Power Estimate.csv")
 
-
-    # try:
-    # Page title
-    #st.title("UK Renewables Table")
-
-    # Read in county names
-    constituencies = pd.read_csv("test_csv.csv")
-    #st.write(print(constituencies))
-    constituencies['Wind Energy Estimate (GW)'] = constituencies['sum']/1000 * 19.8 / 1000
-    constituencies['Solar Energy Estimate (GW)'] = constituencies['sum']/1000 * 200 / 1000
-    constituencies['Total Area Available for Devleopment (Km/2)'] = constituencies['sum']/1000 
-
-    try:
-        constituencies = constituencies.rename(columns = {"pcon19nm" : "Constituency"})
-        #constituencies.set_index(constituencies['Constituency'])
-        constituencies = constituencies[['Constituency', 'Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)']]
-
-    except:
-        constituencies = constituencies.rename(columns = {"LAD21NM" : "Local Authority"})
-        #constituencies.set_index(constituencies['Local Authority'])
-        constituencies = constituencies[['Local Authority', 'Wind Energy Estimate (GW)', 'Solar Energy Estimate (GW)', 'Total Area Available for Devleopment (Km/2)']]
-
-
-
-    # constituencies = constituencies["sum"]
-    st.dataframe(constituencies)
-    @st.cache
-    def convert_df(df):
-        return df.to_csv().encode('utf-8')
-
-    csvDownload = convert_df(constituencies)
-    st.download_button(
-    "Download .csv",
-    csvDownload,
-    "Renewable Energy Potential.csv",
-    "text/csv",
-    key='download-csv1'   )
-
+    #geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(30)), st.session_state['bounds'] , "test_csv.csv", statistics_type='SUM', scale=30)
+# pointless update

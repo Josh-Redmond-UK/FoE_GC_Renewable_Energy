@@ -4,6 +4,8 @@ import ee
 import geemap.eefolium as geemap
 import csv
 import pandas as pd
+import logging
+from retry import retry
 
 
 
@@ -48,3 +50,24 @@ def compute_exclusions(exclusions, base):
         base = base.multiply(e)
 
     return base
+
+def computePowerAreaRequests(FeatureCollection, raster):
+    areas = FeatureCollection.aggregate_array('.geo').getInfo()
+    try:
+        names = FeatureCollection.aggregate_array('pcon19nm').getInfo()
+    except:
+        names = FeatureCollection.aggregate_array('LAD21NM').getInfo()
+    rasters = [raster for r in range(len(areas))]
+    print(names, "done")
+    requests =  [areas, names, rasters]
+    return pd.DataFrame(requests).T
+
+
+#@retry(tries=10, delay=1, backoff=2)
+def usableAreaPerGeom(geom, name, raster):
+    #raster = args[2]
+    #geom = args[0]
+    try: 
+        return raster.pixelArea().clip(geom).reproject(raster.projection()).reduceRegion(ee.Reducer.sum(), geom).getInfo()['area']
+    except:
+        return 0

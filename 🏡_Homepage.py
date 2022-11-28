@@ -5,8 +5,7 @@
 
 import streamlit as st
 import ee
-st.set_page_config(page_title = "Homepage")
-
+st.set_page_config(page_title = "Homepage", layout="wide")
 
 
 # Sidebar title
