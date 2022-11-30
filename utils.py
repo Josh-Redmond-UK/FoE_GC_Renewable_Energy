@@ -183,7 +183,9 @@ def displayPowerOverview(usableArea, exclusions, areaName, windPower, solarPower
             windPotential.subheader("Wind Power Potential with Current Exclusions")
             windPotential.write(f"{windPotential} GW")
 
-    
+def getGeomPotential(geometry, exclusions, raster):
+
+    return raster.multiply(exclusions).reduceRegion(ee.Reducer.sum(), geometry).getInfo()
 
 
 
