@@ -16,8 +16,11 @@ import geemap.eefolium as geemap
 
 from utils import *
 
+#Get rasters for the renewable power potentials
+pvPotential = solarPowerRaster()
+turbinePotential = windPowerRaster()
 
-# Load in datasets (that aren't in GEE)
+# Load in datasets (that aren't in GEE) containing constituency/LAD names
 polys_list = load_csv_list("constituencies_names.csv")[1:]
 lad_list = load_csv_list("local_authorities_name.csv")[1:]
 
@@ -49,6 +52,7 @@ tfile.flush()
 credentials = ee.ServiceAccountCredentials(service_account, tfile.name)
 ee.Initialize(credentials)'''
 
+# Initialise with the high volume API for faster queries
 #credentials = service_account.Credentials.from_service_account_info(st.secrets['username'], st.secrets["gcp_service_account"])
 ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
 
@@ -57,61 +61,20 @@ ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
 #ee.Initialize()#st.secrets['EARTHENGINE_TOKEN'])
 
 # Exclusion zones
-exclusions_dict = {"Wind Speed": ee.Image('projects/data-sunlight-311713/assets/wind_cutoff').lt(1),
-"Slope": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(15),
-"Slope > 10": ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003")).lt(10),
-"Transmission Lines":ee.FeatureCollection('projects/data-sunlight-311713/assets/transmission').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Roads": ee.FeatureCollection('projects/data-sunlight-311713/assets/UK_Roads_Buffer_200m').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Peatland": ee.FeatureCollection('projects/data-sunlight-311713/assets/merged_peatlands').reduceToImage(properties = ['Shape__Are'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Woodlands": ee.FeatureCollection('projects/data-sunlight-311713/assets/woodlands').reduceToImage(properties= ['FEATCODE'], reducer = ee.Reducer.first()).unmask().lt(1),
-"Cycle Paths": ee.FeatureCollection('projects/data-sunlight-311713/assets/cyclenet').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Railway": ee.FeatureCollection('projects/data-sunlight-311713/assets/traintracks').reduceToImage(properties = ['FEATCODE'], reducer = ee.Reducer.first()).unmask().lt(1),
-"Areas of Natural Beauty": ee.FeatureCollection("projects/data-sunlight-311713/assets/Areas_of_Outstanding_Natural_Beauty_England").reduceToImage(properties= ['stat_area'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Protected Areas": ee.FeatureCollection("projects/data-sunlight-311713/assets/gb_protected_areas_nobuffer").reduceToImage(properties= ['Shape_Area'], reducer= ee.Reducer.first()).unmask().gt(0).eq(0),
-"Surface Water":ee.FeatureCollection('projects/data-sunlight-311713/assets/UK_SurfaceWater_Area_Buffer_50m').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Cultural Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/england_culturalsites').reduceToImage(properties = ['ListEntry'], reducer = ee.Reducer.first()).unmask().lt(1),
-"Parks and Green Space": ee.FeatureCollection("projects/data-sunlight-311713/assets/GreenspaceEngArea").reduceToImage(properties= ['areaHa'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Functional Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/Functional_sites').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Built Up Areas": get_build_up_area_buffer(100).unmask().lt(1),
-"Existing Solar PV": ee.FeatureCollection('projects/data-sunlight-311713/assets/solar_pv').reduceToImage(properties= ['FID'], reducer = ee.Reducer.first()).unmask().lt(1),
-"Existing Other Renewable":ee.FeatureCollection('projects/data-sunlight-311713/assets/other_renewables').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Existing Onshore Wind": ee.FeatureCollection('projects/data-sunlight-311713/assets/onshore_wind').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Flood Risk Zone 2": ee.FeatureCollection('users/Josh_Redmond/EA_FloodMapForPlanningRiversAndSeaFloodZone2_SHP_Full').reduceToImage(properties= ['st_area_sh'], reducer= ee.Reducer.first()).unmask().lt(1),
-"Flood Risk Zone 3": ee.FeatureCollection('users/Josh_Redmond/EA_FloodMapForPlanningRiversAndSeaFloodZone3_SHP_Full').reduceToImage(properties= ['st_area_sh'], reducer= ee.Reducer.first()).unmask().lt(1)
-}
-
+# Each entry is a string describing the exclusion as the key, and a google earth engine integer image with values 0 and 1 where 1 is "can build" and 0 is "cant build"
+# We multiply the list of all active exclusions together to get an area where none of them are active (i.e. where it is ok to build)
+exclusions_dict = getExclusionsDict()
 test_exclusions = list(exclusions_dict.keys())
 
-wind_exclusions = ["Wind Speed",
-"Transmission Lines",
-"Aircraft Flightpath",
-"Noise",
-"Built Up Areas",
-"Slope",
-"Existing Onshore Wind",
-"Existing Other Renewable"]
-
-common_exclusions = ["Roads",
-"Railway",
-#"Public Rights of Way",
-#"Heritage Sites",
-"Peatland",
-"Protected Areas",
-"Areas of Natural Beauty",
-"Woodlands",
-"Cycle Paths",
-"Surface Water",
-"Cultural Sites",
-"Parks and Green Space",
-"Functional Sites",
-]
-
-solar_exclusions = ["Slope > 10",
-"Existing Solar PV"]
+# Some exclusions are only valid for certain power types, so they are split into different lists here
+# When the user selects wind or solar, the common and the relevant specific lists are concatenated 
+# to produce a list of the correct set of exclusion criteria which can be individually toggled
 
 # Streamlit formatting
 #st.title("UK Renewables Map", anchor=None)
 
+
+## Create the basic UI here - allow users to select between different geometry and power types
 geometry_mode = st.selectbox("Local Area Type", ['Constituencies', 'Local Authorities'])
 
 mode = st.radio("Power Option", ["🌞 Solar", "💨 Wind"])
@@ -136,12 +99,12 @@ with st.form("Parameters"):
         with st.expander("Options"):
             exclusion_buttons = {}
             if mode == "💨 Wind":
-                key_list = common_exclusions+wind_exclusions
+                key_list = getExclusions("common")+getExclusions("wind") #common_exclusions+wind_exclusions
                 #test_exclusions = list({exclusions_dict[k] for k in key_list}.keys())
                 test_exclusions = key_list
                 exclusion_options = test_exclusions
             else:
-                key_list = common_exclusions+solar_exclusions
+                key_list = getExclusions("common") + getExclusions("solar") #common_exclusions+solar_exclusions
                 test_exclusions = key_list
 
              #   test_exclusions = list({exclusions_dict[k] for k in key_list}.keys())
@@ -184,95 +147,78 @@ with st.form("Parameters"):
 #st.sidebar.dataframe(display_df)
 
 
-
-
 if go_button:
-
-    m = geemap.Map(center=[55.3, 0], zoom=6)
-    if geometry_mode == "Constituencies":
-        uk_adm2_all = ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC")#.filter(f"pcon19nm == '{area}'")
-        uk_adm2 = uk_adm2_all.filter(f"pcon19nm == '{area}'")
-    else:
-        uk_adm2_all = ee.FeatureCollection("projects/data-sunlight-311713/assets/local_authorities_UK")#.filter(f"pcon19nm == '{area}'")
-        uk_adm2 = uk_adm2_all.filter(f"LAD21NM == '{area}'")
-
-    m.centerObject(uk_adm2)
-    image_exclusion = []
-
-    for x in exclusion_buttons.keys():
-    # st.write(x)
-    # st.write(exclusion_buttons[x])
-        if exclusion_buttons[x]:
-            image_exclusion.append(exclusions_dict[x])
-    #     st.write(exclusions_dict[x])
-
-    if mode == "🌞 Solar":
-        power = ee.Image('projects/data-sunlight-311713/assets/PV_Average')
-        minvis = 500
-        maxvis = 1500
-    else:
-        power = ee.Image('projects/data-sunlight-311713/assets/wind_power')
-        minvis = 1
-        maxvis = 1000
-
-    power = compute_exclusions(image_exclusion, power)
-    power = power.updateMask(power.gt(0))
-
-    st.session_state['power'] = power
-    wholeUkPower = power
-    power = power.clip(uk_adm2)
-    st.session_state['bounds'] = uk_adm2#_all
-
-    empty = ee.Image().byte()
-
-    outline = empty.paint(
-    featureCollection= uk_adm2,
-    color= 1,
-    width= 3
-    )
-    m.addLayer(outline, {}, f"{area}", True, 0.5)
+    with st.spinner("Generating Renewable Potential Map"):
+        # Select the correct geometry type and the specific geometry within that set according to user input
+        if geometry_mode == "Constituencies":
+            uk_adm2_all = constituenciesVector()#ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC")#.filter(f"pcon19nm == '{area}'")
+            activeGeom = uk_adm2_all.filter(f"pcon19nm == '{area}'")
+        else:
+            uk_adm2_all = ladsVector()#ee.FeatureCollection("projects/data-sunlight-311713/assets/local_authorities_UK")#.filter(f"pcon19nm == '{area}'")
+            activeGeom = uk_adm2_all.filter(f"LAD21NM == '{area}'")
 
 
+        image_exclusion = []
 
+        for x in exclusion_buttons.keys():
+            if exclusion_buttons[x]:
+                # Create a list of the active exclusions to multiply together 
+                image_exclusion.append(exclusions_dict[x])
+        if mode == "🌞 Solar":
+            power = pvPotential
+            minvis = 500
+            maxvis = 1500
+        else:
+            power = turbinePotential
+            minvis = 1
+            maxvis = 1000
 
-    m.addLayer(power, {"min":minvis, "max":maxvis, "palette":['#140b34', '#84206b', '#e55c30', '#f6d746']})
-    m.add_colorbar(colors=['#140b34', '#84206b', '#e55c30', '#f6d746'], vmin=minvis, vmax=maxvis, layer_name="Potential Power")
+        exclusions = compute_exclusions(image_exclusion)
+        localPower = getPowerLocal(activeGeom, exclusions, power)
+        
 
-    m.addLayerControl() 
+        st.session_state['power'] = localPower   
+        st.session_state['bounds'] = activeGeom#_all
+        m = getMap(localPower, activeGeom, area, minvis, maxvis)
+        
+        # 
+        developmentArea = usableAreaPerGeom(activeGeom, localPower)
+
     if mode == '🌞 Solar':
         st.write("Map Power Units in kWh/kWp")
     else:
         st.write("Map Power Units in W/M2")
+
+    # Generate the map and display with the active geometry and power raster
+    
     folium_static(m, width=800, height=700)
 
-
-    try:
-        os.remove("test_csv.csv")
-    except:
-        pass
+    # Now get the usable area and power projections
+    
+    displayPowerOverview(developmentArea, exclusions, area, turbinePotential, pvPotential, activeGeom)
 
 
     #power = st.session_state['power']
-    geom_mode = st.session_state['geometry']
+    #geom_mode = st.session_state['geometry']
 
-    requests = computePowerAreaRequests(uk_adm2_all, wholeUkPower)
-    requests = requests.values.tolist()
+    #requests = computePowerAreaRequests(uk_adm2_all, wholeUkPower)
+    #requests = requests.values.tolist()
 
-    names = []
-    areas = []
-    for args in requests:
-        geom, name, raster = args
-        area = usableAreaPerGeom(geom, name, raster)
-        names.append(name)
-        areas.append(area)
+    # names = []
+    # areas = []
+    # for args in requests:
+    #     geom, name, raster = args
+    #     area = usableAreaPerGeom(geom, name, raster)
+    #     names.append(name)
+    #     areas.append(area)
 
-    frame = pd.DataFrame([names, areas], index=["Name", "Total Area for Development (KM^2)"]).T
-    frame['Total Area for Development (KM^2)']/=1000
-    frame['Solar Power Potential (GW)'] = frame['Total Area for Development (KM^2)'] * 200 / 1000
-    frame['Wind Power Potential (GW)'] = frame['Total Area for Development (KM^2)'] * 19.8 / 1000
-    st.dataframe(frame)
-    encoded = frame.to_csv().encode('utf-8') 
-    st.download_button(label="Download CSV", data = encoded, file_name="Uk Power Estimate.csv")
+    # frame = pd.DataFrame([names, areas], index=["Name", "Total Area for Development (KM^2)"]).T
+    # frame['Total Area for Development (KM^2)']/=1000
+    # frame['Solar Power Potential (GW)'] = frame['Total Area for Development (KM^2)'] * 200 / 1000
+    # frame['Wind Power Potential (GW)'] = frame['Total Area for Development (KM^2)'] * 19.8 / 1000
+    # st.dataframe(frame)
+    # encoded = frame.to_csv().encode('utf-8') 
+    # st.download_button(label="Download CSV", data = encoded, file_name="Uk Power Estimate.csv")
 
-    #geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(30)), st.session_state['bounds'] , "test_csv.csv", statistics_type='SUM', scale=30)
+    # #geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(30)), st.session_state['bounds'] , "test_csv.csv", statistics_type='SUM', scale=30)
 # pointless update
