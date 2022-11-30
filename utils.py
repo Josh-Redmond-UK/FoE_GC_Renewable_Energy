@@ -156,58 +156,75 @@ def computePowerAreaRequests(FeatureCollection, exclusions, power):
     requests =  [areas, names, rasters]
     return pd.DataFrame(requests).T
 
+def renewablePotential(activeGeom, exclusions):  
+    #solarExclusions = [exclusionsDict[x] for x in solarExclusions]
 
-def displayPowerOverview(usableArea, exclusions, areaName, windPower, solarPower, activeGeom):
+    windPotential = windPowerRaster()
+    solarPotential = solarPowerRaster()
+    localWind = windPotential.multiply(exclusions).reduceRegion(ee.Reducer.sum(), activeGeom).getInfo()['b1']
+    localSolar = solarPotential.multiply(exclusions).reduceRegion(ee.Reducer.sum(), activeGeom).getInfo()['b1']
+
+    totalArea = usableAreaPerGeom(activeGeom, windPotential.gt(0).Or(solarPotential.gt(0)))
+
+    testdict =  {"Development Area": totalArea, "Solar Potential": localSolar, "Wind Potential": localWind}#jsonify(DevelopmentArea = totalArea, SolarPotential = localSolar, windPotential = localWind)
+    return testdict
+
+
+
+
+def displayPowerOverview(activeGeom, exclusions, area):
     with st.spinner("Generating Area Statistics"):
 
-        localSolar = getPowerLocal(activeGeom, exclusions, solarPower)
-        solarPotential = int(totalPowerPerGeom(activeGeom, localSolar))
-        localWind = getPowerLocal(activeGeom, exclusions, windPower)
-        windPotential = int(totalPowerPerGeom(activeGeom, localWind))
+        summary = renewablePotential(activeGeom, exclusions)
+        
         powerSummary = st.container()
-        powerSummary.header(f"Summary of Renewable Potential in {areaName}")
+        powerSummary.header(f"Summary of Renewable Potential in {area}")
         col1, col2, col3 = st.columns(3)
 
         with col1:
             totalArea = st.container()
             totalArea.subheader("Total Area Available for Development")
-            totalArea.write(f"{usableArea/1000} KM2")
+            totalArea.text(f"{summary['Development Area']/1000} KM2")
 
         with col2:
             solarPotential = st.container()
             solarPotential.subheader("Solar Power Potential with Current Exclusions")
-            solarPotential.write(f"{solarPotential} GW")
+            solarPotential.text(f"{summary['Solar Potential']} GW")
         
         with col3:
             windPotential = st.container()
             windPotential.subheader("Wind Power Potential with Current Exclusions")
-            windPotential.write(f"{windPotential} GW")
+            windPotential.text(f"{summary['Wind Potential']} GW")
+    print(windPotential)
+    print(solarPotential)
 
 def getGeomPotential(geometry, exclusions, raster):
 
-    return raster.multiply(exclusions).reduceRegion(ee.Reducer.sum(), geometry).getInfo()
+    return minimumMappingUnit(raster.multiply(exclusions)).reduceRegion(ee.Reducer.sum(), geometry).getInfo()
 
 
-
+def minimumMappingUnit(raster, size=10):
+    mmuMask = raster.gt(0).connectedPixelCount().gte(size)
+    return raster.updateMask(mmuMask)
 
 #@retry(tries=10, delay=1, backoff=2)
 def usableAreaPerGeom(geom, raster):
     #raster = args[2]
     #geom = args[0]
     try: 
-        return raster.pixelArea().clip(geom).reproject(raster.projection()).reduceRegion(ee.Reducer.sum(), geom).getInfo()['area']
+        return minimumMappingUnit(raster).pixelArea().clip(geom).reproject(raster.projection()).reduceRegion(ee.Reducer.sum(), geom).getInfo()['area']
     except:
         return 0
 
 def totalPowerPerGeom(geom, raster):
     try: 
-        return raster.clip(geom).reproject(raster.projection()).reduceRegion(ee.Reducer.sum(), geom).getInfo()['b1']
+        return minimumMappingUnit(raster).clip(geom).reproject(raster.projection()).reduceRegion(ee.Reducer.sum(), geom).getInfo()['b1']
     except:
         return 0
 
 
 def getPowerLocal(geometry, exclusions, power):
-    localPower = power.multiply(exclusions).clip(geometry)
+    localPower = minimumMappingUnit(power.multiply(exclusions)).clip(geometry)
     return localPower.updateMask(localPower.gt(0))
 
 def getMap(localPower, activeGeometry, areaName, minVis, maxVis):

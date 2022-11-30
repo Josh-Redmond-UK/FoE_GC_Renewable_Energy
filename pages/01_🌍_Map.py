@@ -25,7 +25,7 @@ polys_list = load_csv_list("constituencies_names.csv")[1:]
 lad_list = load_csv_list("local_authorities_name.csv")[1:]
 
 
-
+### This is used for authenticating when the app is deployed, we dont need it right now 
 # service_account = st.secrets['service_account']
 junkstring = '''
 data = {}
@@ -70,9 +70,6 @@ test_exclusions = list(exclusions_dict.keys())
 # When the user selects wind or solar, the common and the relevant specific lists are concatenated 
 # to produce a list of the correct set of exclusion criteria which can be individually toggled
 
-# Streamlit formatting
-#st.title("UK Renewables Map", anchor=None)
-
 
 ## Create the basic UI here - allow users to select between different geometry and power types
 geometry_mode = st.selectbox("Local Area Type", ['Constituencies', 'Local Authorities'])
@@ -87,7 +84,7 @@ with st.form("Parameters"):
        # with col2:
         if geometry_mode == "Constituencies":
   
-            area = st.selectbox("Area", polys_list) #on_change =area_change_callback, args={"Cheshire", uk_adm2, m})
+            area = st.selectbox("Area", polys_list) 
             
         else:
             area =st.selectbox("Area", lad_list)
@@ -100,18 +97,14 @@ with st.form("Parameters"):
             exclusion_buttons = {}
             if mode == "💨 Wind":
                 key_list = getExclusions("common")+getExclusions("wind") #common_exclusions+wind_exclusions
-                #test_exclusions = list({exclusions_dict[k] for k in key_list}.keys())
                 test_exclusions = key_list
                 exclusion_options = test_exclusions
             else:
                 key_list = getExclusions("common") + getExclusions("solar") #common_exclusions+solar_exclusions
                 test_exclusions = key_list
-
-             #   test_exclusions = list({exclusions_dict[k] for k in key_list}.keys())
                 exclusion_options = test_exclusions
 
             for ex in exclusion_options:
-                #st.write(ex)
                 x = st.checkbox(ex)
                 exclusion_buttons[ex] = x
                 
@@ -122,39 +115,18 @@ with st.form("Parameters"):
             exclusion_buttons['Peatland'] = False
                 
 
-        #st.multiselect("Toggleable Criteria", wind_exclusions+common_exclusions)
         go_button = st.form_submit_button("Draw Map")
 
-# Save exclusions buttons output in session state to display between pages
-#exclusion_buttons_side = pd.DataFrame.from_dict(exclusion_buttons, orient = "index")
-
-#if 'exclusion_buttons_side' not in st.session_state:
-#    st.session_state['exclusion_buttons_side'] = exclusion_buttons_side
-#if go_button:
-#    st.session_state['exclusion_buttons_side'] = exclusion_buttons_side
-
-# Make the true/false dict emojis
-#torf = {True : "❌", False : "✅"}
-
-#display_df = st.session_state['exclusion_buttons_side']
-#display_df[0] = display_df[0].map(torf)
-#display_df = display_df.style.hide_columns()
-
-#st.sidebar.write(display_df.to_html(), unsafe_allow_html=True)
-
-
-
-#st.sidebar.dataframe(display_df)
 
 
 if go_button:
     with st.spinner("Generating Renewable Potential Map"):
         # Select the correct geometry type and the specific geometry within that set according to user input
         if geometry_mode == "Constituencies":
-            uk_adm2_all = constituenciesVector()#ee.FeatureCollection("projects/data-sunlight-311713/assets/Westminster_Parliamentary_Constituencies_December_2019_Boundaries_UK_BUC")#.filter(f"pcon19nm == '{area}'")
+            uk_adm2_all = constituenciesVector()
             activeGeom = uk_adm2_all.filter(f"pcon19nm == '{area}'")
         else:
-            uk_adm2_all = ladsVector()#ee.FeatureCollection("projects/data-sunlight-311713/assets/local_authorities_UK")#.filter(f"pcon19nm == '{area}'")
+            uk_adm2_all = ladsVector()
             activeGeom = uk_adm2_all.filter(f"LAD21NM == '{area}'")
 
         st.session_state['NationalGeometries'] = uk_adm2_all
@@ -174,7 +146,7 @@ if go_button:
             maxvis = 1000
 
         exclusions = compute_exclusions(image_exclusion)
-        localPower = getPowerLocal(activeGeom, exclusions, power)
+        localPower = minimumMappingUnit(getPowerLocal(activeGeom, exclusions, power))
         
         st.session_state['exclusions'] = exclusions
         st.session_state['geometryMode'] = geometry_mode
@@ -191,35 +163,7 @@ if go_button:
         st.write("Map Power Units in W/M2")
 
     # Generate the map and display with the active geometry and power raster
-    
     folium_static(m, width=800, height=700)
 
     # Now get the usable area and power projections
-    
-    displayPowerOverview(developmentArea, exclusions, area, turbinePotential, pvPotential, activeGeom)
-
-
-    #power = st.session_state['power']
-    #geom_mode = st.session_state['geometry']
-
-    #requests = computePowerAreaRequests(uk_adm2_all, wholeUkPower)
-    #requests = requests.values.tolist()
-
-    # names = []
-    # areas = []
-    # for args in requests:
-    #     geom, name, raster = args
-    #     area = usableAreaPerGeom(geom, name, raster)
-    #     names.append(name)
-    #     areas.append(area)
-
-    # frame = pd.DataFrame([names, areas], index=["Name", "Total Area for Development (KM^2)"]).T
-    # frame['Total Area for Development (KM^2)']/=1000
-    # frame['Solar Power Potential (GW)'] = frame['Total Area for Development (KM^2)'] * 200 / 1000
-    # frame['Wind Power Potential (GW)'] = frame['Total Area for Development (KM^2)'] * 19.8 / 1000
-    # st.dataframe(frame)
-    # encoded = frame.to_csv().encode('utf-8') 
-    # st.download_button(label="Download CSV", data = encoded, file_name="Uk Power Estimate.csv")
-
-    # #geemap.zonal_statistics(power.gt(0).multiply(ee.Image.constant(30)), st.session_state['bounds'] , "test_csv.csv", statistics_type='SUM', scale=30)
-# pointless update
+    displayPowerOverview(activeGeom, exclusions, area)
