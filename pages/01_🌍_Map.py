@@ -157,7 +157,7 @@ if go_button:
             uk_adm2_all = ladsVector()#ee.FeatureCollection("projects/data-sunlight-311713/assets/local_authorities_UK")#.filter(f"pcon19nm == '{area}'")
             activeGeom = uk_adm2_all.filter(f"LAD21NM == '{area}'")
 
-
+        st.session_state['NationalGeometries'] = uk_adm2_all
         image_exclusion = []
 
         for x in exclusion_buttons.keys():
@@ -176,7 +176,8 @@ if go_button:
         exclusions = compute_exclusions(image_exclusion)
         localPower = getPowerLocal(activeGeom, exclusions, power)
         
-
+        st.session_state['exclusions'] = exclusions
+        st.session_state['geometryMode'] = geometry_mode
         st.session_state['power'] = localPower   
         st.session_state['bounds'] = activeGeom#_all
         m = getMap(localPower, activeGeom, area, minvis, maxvis)
