@@ -195,8 +195,6 @@ def displayPowerOverview(activeGeom, exclusions, area):
             windPotential = st.container()
             windPotential.subheader("Wind Power Potential with Current Exclusions")
             windPotential.text(f"{summary['Wind Potential']} GW")
-    print(windPotential)
-    print(solarPotential)
 
 def getGeomPotential(geometry, exclusions, raster):
 

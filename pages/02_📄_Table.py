@@ -57,10 +57,14 @@ else:
         developmentAreas = []
 
         for idx, n in enumerate(geomNames):
-            #    geomUpdate = st.text(f"Geometry {idx+1} of {numGeoms}")
+            geomUpdate = st.text(f"Geometry {idx+1} of {numGeoms}")
             activeGeom = geometries.filter(f"{nameIndex} == '{n}'")
-            solarPotential = getGeomPotential(activeGeom, exclusions, pvPotential)
-            windPotential = getGeomPotential(activeGeom, exclusions, turbinePotential)
+            try:
+                solarPotential = getGeomPotential(activeGeom, exclusions, pvPotential)
+                windPotential = getGeomPotential(activeGeom, exclusions, turbinePotential)
+            except:
+                solarPotential = 0
+                windPotential = 0
             solarPotentials.append(solarPotential)
             windPotentials.append(windPotential)
             progress += 1/numGeoms

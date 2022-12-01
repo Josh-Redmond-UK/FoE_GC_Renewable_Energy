@@ -2,3 +2,5 @@ streamlit
 geemap
 streamlit_folium
 google-auth
+geopy
+flask

@@ -84,10 +84,10 @@ with st.form("Parameters"):
        # with col2:
         if geometry_mode == "Constituencies":
   
-            area = st.selectbox("Area", polys_list) 
+            area = st.selectbox("Area", load_csv_list("constituencies_names.csv")[1:]) 
             
         else:
-            area =st.selectbox("Area", lad_list)
+            area =st.selectbox("Area", load_csv_list("local_authorities_name.csv")[1:])
         st.session_state['geometry'] = area
 
         st.header("Toggle Exclusion Criteria")
