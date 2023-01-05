@@ -16,13 +16,6 @@ import geemap.eefolium as geemap
 
 from utils import *
 
-#Get rasters for the renewable power potentials
-pvPotential = solarPowerRaster()
-turbinePotential = windPowerRaster()
-
-# Load in datasets (that aren't in GEE) containing constituency/LAD names
-polys_list = load_csv_list("constituencies_names.csv")[1:]
-lad_list = load_csv_list("local_authorities_name.csv")[1:]
 
 
 ### This is used for authenticating when the app is deployed, we dont need it right now 
@@ -55,6 +48,15 @@ ee.Initialize(credentials)'''
 # Initialise with the high volume API for faster queries
 #credentials = service_account.Credentials.from_service_account_info(st.secrets['username'], st.secrets["gcp_service_account"])
 ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
+
+#Get rasters for the renewable power potentials
+pvPotential = solarPowerRaster()
+turbinePotential = windPowerRaster()
+
+# Load in datasets (that aren't in GEE) containing constituency/LAD names
+polys_list = load_csv_list("constituencies_names.csv")[1:]
+lad_list = load_csv_list("local_authorities_name.csv")[1:]
+
 
 
 # Intialize earth engine

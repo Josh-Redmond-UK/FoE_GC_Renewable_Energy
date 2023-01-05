@@ -17,7 +17,7 @@ if "exclusions" not in st.session_state:
     st.write("Please use the map view to generate a set of exclusion criteria before using the table view")
 else:
     with st.spinner("Generating Table, this might take a while..."):
-
+        
         #Get rasters for the renewable power potentials
         pvPotential = solarPowerRaster()
         turbinePotential = windPowerRaster()
@@ -72,7 +72,7 @@ else:
             #del(geomUpdate)
 
         resultsFrame = pd.dataFrame([names, solarPotentials, windPotentials], index=["Name", "Solar Power Potential", "Wind Power Potential"])
-    del(progressTooltip)
+    #del(progressTooltip)
     del(progressBar)
     st.dataframe(resultsFrame)
 
