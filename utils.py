@@ -89,12 +89,15 @@ def getExclusionsDict():
     "Functional Sites": ee.FeatureCollection('projects/data-sunlight-311713/assets/Functional_sites').reduceToImage(properties= ['FEATCODE'], reducer= ee.Reducer.first()).unmask().lt(1),
     "Built Up Areas": get_build_up_area_buffer(100).unmask().lt(1),
     "Existing Solar PV": ee.FeatureCollection('projects/data-sunlight-311713/assets/solar_pv').reduceToImage(properties= ['FID'], reducer = ee.Reducer.first()).unmask().lt(1),
-    #"Existing Other Renewable":ee.FeatureCollection('projects/data-sunlight-311713/assets/other_renewables').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
+    "Existing Other Renewable":ee.FeatureCollection('projects/data-sunlight-311713/assets/other_renewables').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
     "Existing Onshore Wind": ee.FeatureCollection('projects/data-sunlight-311713/assets/onshore_wind').reduceToImage(properties= ['FID'], reducer= ee.Reducer.first()).unmask().lt(1),
     "Flood Risk Zone 2": ee.FeatureCollection('users/Josh_Redmond/EA_FloodMapForPlanningRiversAndSeaFloodZone2_SHP_Full').reduceToImage(properties= ['st_area_sh'], reducer= ee.Reducer.first()).unmask().lt(1),
     "Flood Risk Zone 3": ee.FeatureCollection('users/Josh_Redmond/EA_FloodMapForPlanningRiversAndSeaFloodZone3_SHP_Full').reduceToImage(properties= ['st_area_sh'], reducer= ee.Reducer.first()).unmask().lt(1),
     #"High Grade Agricultural":
-    "England National Parks": ee.FeatureCollection('projects/data-sunlight-311713/assets/EnglandNationalParks').reduceToImage(properties= ['code'], reducer= ee.Reducer.first()).unmask().lt(1)
+    "England National Parks": ee.FeatureCollection('projects/data-sunlight-311713/assets/EnglandNationalParks').reduceToImage(properties= ['code'], reducer= ee.Reducer.first()).unmask().lt(1),
+    "Wales National Park": ee.FeatureCollection('projects/data-sunlight-311713/assets/WalesNatPark').reduceToImage(properties= ['ISIS_ID'], reducer= ee.Reducer.first()).unmask().lt(1),
+    "Scotland Scenic Areas": ee.FeatureCollection('projects/data-sunlight-311713/assets/ScotlandNSAs').reduceToImage(properties= ['dummy'], reducer= ee.Reducer.first()).unmask().lt(1),
+    "Agricultural Land": ee.FeatureCollection('projects/data-sunlight-311713/assets/AgriculturalLandEngland').reduceToImage(properties= ['hectares'], reducer= ee.Reducer.first()).unmask().lt(1)
     }
 
     return exclusions_dict
@@ -102,8 +105,8 @@ def getExclusionsDict():
 def getExclusions(type="common"):
     wind_exclusions = ["Wind Speed",
     "Transmission Lines",
-    "Aircraft Flightpath",
-    "Noise",
+    #"Aircraft Flightpath",
+    #"Noise",
     "Built Up Areas",
     "Slope",
     "Existing Onshore Wind",
@@ -122,11 +125,14 @@ def getExclusions(type="common"):
     "Cultural Sites",
     "Parks and Green Space",
     "Functional Sites",
-    "England National Parks"
+    "England National Parks",
+    "Scotland Scenic Areas",
+    "Wales National Park"
     ]
 
     solar_exclusions = ["Slope > 10",
-    "Existing Solar PV"]
+    "Existing Solar PV",
+    "Agricultural Land"]
 
     listDict = {"solar":solar_exclusions, "common":common_exclusions, "wind":wind_exclusions}
 
