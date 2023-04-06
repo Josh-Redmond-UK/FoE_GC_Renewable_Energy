@@ -4,3 +4,4 @@ streamlit_folium
 google-auth
 geopy
 flask
+retry
